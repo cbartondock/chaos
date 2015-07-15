@@ -1,4 +1,5 @@
 import numpy
+import os
 import matplotlib.pylab as plt
 import matplotlib.cm as cm
 import cPickle as pickle
@@ -12,9 +13,10 @@ parser.add_option('-g','--graph', action='store_true',dest='graph')
 (options, args) = parser.parse_args()
 
 #required libraries
-INV = CDLL('/Users/chrisdock/Documents/chaos/ccodefromsage/invariantdynamics/invariant4.dylib')
-RK4 = CDLL('/Users/chrisdock/Documents/chaos/ccodefromsage/rk4/rk4.dylib')
-SAM = CDLL('/Users/chrisdock/Documents/chaos/ccodefromsage/sparse_matrix_table/smtable.dylib')
+libraries = open("libraries.txt").readlines()
+INV = CDLL(libraries[0].strip())
+RK4 = CDLL(libraries[1].strip())
+SAM = CDLL(libraries[2].strip())
 
 '''
 Parameters

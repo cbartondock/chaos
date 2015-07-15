@@ -122,10 +122,10 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int chmap,int top,dou
         for(int c=0; c<4; c++) {
             //double x = corners[c][0];
             //double y = corners[c][1];
-	    if(chmap==1){
+	    /*if(chmap==1){
             	corners[c][1] = smod(sin(x+y)+y,2*M_PI);
             	corners[c][0] = smod(x+y,2*M_PI);
-	    }
+	    }*/
 	    if(chmap==2){
 	    	memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
 	    	rk4(newcorners[c],2*M_PI,.2);

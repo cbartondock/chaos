@@ -15,13 +15,11 @@ double ddpx(double x, double y, double t) {
 }
 double ddpy(double x, double y, double t) {
     return 2.69*cos(t)-sin(x)-.2*y;
-    //return -x;
 }
 
 
 
 void rk4(double p[2], double tmax, double h) {
-    //FILE *file = fopen("out.txt","w");
     double t = 0;
     double (*f)(double,double,double) = &ddpx;
     double (*g)(double,double,double) = &ddpy;
