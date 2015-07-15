@@ -2,16 +2,16 @@ all: ergodic.dylib  invariant4.dylib quasiperiodicity.dylib
 exe: ergodic  invariant4 quasiperiodicity
 
 % : %.c 
-	/usr/local/bin/gcc-5 -O3 -std=c99 -fopenmp -o $@ $^
+	/usr/bin/gcc -O3 -std=c99 -o $@ $^
 
 %.o : %.c
-	/usr/local/bin/gcc-5 -O3 -std=c99 -fopenmp -fPIC -c $^
+	/usr/bin/gcc -O3 -std=c99 -fPIC -c $^
 
 %.dylib : %.o
-	/usr/local/bin/gcc-5 -dynamiclib -fopenmp -o $@ $^
+	/usr/bin/gcc -dynamiclib -o $@ $^
 
 %.so: %.o
-	/usr/local/bin/gcc-5 -shared -o $@ $^
+	/usr/bin/gcc -shared -o $@ $^
 
 clean:
 	rm -f *.so *.o *.dylib

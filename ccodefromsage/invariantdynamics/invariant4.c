@@ -35,6 +35,8 @@ void calc_invariant(
         int maxiterr,
         int cols,
         int rows,
+	int chmap,
+	int top,
         double leastx,
         double leasty,
         double deltax,
@@ -84,16 +86,24 @@ void calc_invariant(
                 corners[2][0] = leastx + j*deltax; corners[2][1] = leasty + (i+1)*deltay; //bl
                 corners[3][0] = leastx + (j+1)*deltax; corners[3][1] = leasty + (i+1)*deltay; //br
                 for(c=0; c<4; c++) {
-                    //double x = corners[c][0];
+		    //double x = corners[c][0];
                     //double y = corners[c][1];
-                    //corners[c][1] = smod(sin(x+y)+y,2*M_PI);
-                    //corners[c][0] = smod(x+y,2*M_PI);
-                    //newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
-                    //newcorners[c][1]=corners[c][0];
-                    memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                    rk4(newcorners[c],2*M_PI,.2);
-                    //newcorners[c][0] = 1*corners[c][0];
-                    //newcorners[c][1] = 1*corners[c][1];
+		    if(chmap==1){
+                    	corners[c][1] = smod(sin(x+y)+y,2*M_PI);
+                    	corners[c][0] = smod(x+y,2*M_PI);
+		    }
+		    if(chmap==2){
+		    	memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
+		    	rk4(newcorners[c],2*M_PI,.2);
+		    }
+		    if(chmap==3){
+		    	newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                    	newcorners[c][1]=corners[c][0];
+		    }
+		    if(chmap==4){
+                    	newcorners[c][0] = 2*corners[c][0];
+                    	newcorners[c][1] = .5*corners[c][1];
+		    }
                 }
                 memcpy(&edges[0][0], &newcorners[0],sizeof(edges[0][0]));
                 memcpy(&edges[0][1], &newcorners[1],sizeof(edges[0][0]));
@@ -124,10 +134,12 @@ void calc_invariant(
                         icepty = (int)round((cepty-leasty)/deltay);
                         iceptx2= iceptx-1;
                         icepty2= icepty-1;
-                        //cylinder
-                        iceptx = smod(iceptx,cols);
-                        iceptx2 = smod(iceptx2,cols);
-                        // printf("iv: %d, iceptx: %d, icepty %d\n", iv,iceptx,icepty);
+                        if(top==2){
+                            //cylinder
+			    iceptx = smod(iceptx,cols);
+                            iceptx2 = smod(iceptx2,cols);
+			}
+			// printf("iv: %d, iceptx: %d, icepty %d\n", iv,iceptx,icepty);
                         if(iceptx>=0 &&iceptx<cols && icepty >=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
                             m[icepty][iceptx] = (1<<4)|m[icepty][iceptx];
                         }
@@ -145,11 +157,11 @@ void calc_invariant(
                         icepty = (int)round((cepty-leasty)/deltay);
                         iceptx2= iceptx-1;
                         icepty2= icepty-1;
-
-                        //cylinder
-                        iceptx = smod(iceptx,cols);
-                        iceptx2 = smod(iceptx2,cols);
-
+			if(top==2){
+                            //cylinder
+                            iceptx = smod(iceptx,cols);
+                            iceptx2 = smod(iceptx2,cols);
+			}
                         //   printf("jv: %d, iceptx: %d, icepty %d\n", jv,iceptx,icepty);
 
                         if(iceptx>=0 &&iceptx<cols && icepty>=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
@@ -212,14 +224,22 @@ void calc_invariant(
                 for(c=0; c<4; c++) {
                     //double x = corners[c][0];
                     //double y = corners[c][1];
-                    //corners[c][1] = smod(sin(x+y)+y,2*M_PI);
-                    //corners[c][0] = smod(x+y,2*M_PI);
-                    //newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
-                    //newcorners[c][1]=corners[c][0];
-                    memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                    rk4(newcorners[c],2*M_PI,.2);
-                    //newcorners[c][0] = 1*corners[c][0];
-                    //newcorners[c][1] = 1*corners[c][1];
+                    if(chmap==1){
+		    	corners[c][1] = smod(sin(x+y)+y,2*M_PI);
+                    	corners[c][0] = smod(x+y,2*M_PI);
+		    }
+		    if(chmap==2){
+		    	memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
+		    	rk4(newcorners[c],2*M_PI,.2);
+		    }
+		    if(chmap==3){
+		    	newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                    	newcorners[c][1]=corners[c][0];
+		    }
+		    if(chmap==4){
+		    	newcorners[c][0] = 2*corners[c][0];
+                    	newcorners[c][1] = .5*corners[c][1];
+	            }
                 }
                 memcpy(&edges[0][0], &newcorners[0],sizeof(edges[0][0]));
                 memcpy(&edges[0][1], &newcorners[1],sizeof(edges[0][0]));
@@ -246,9 +266,11 @@ void calc_invariant(
                         icepty = (int)round((cepty-leasty)/deltay);
                         iceptx2= iceptx-1;
                         icepty2= icepty-1;
-                        //cylinder
-                        iceptx = smod(iceptx,cols);
-                        iceptx2 = smod(iceptx2,cols);
+			if(top==2){
+                            //cylinder
+                            iceptx = smod(iceptx,cols);
+                            iceptx2 = smod(iceptx2,cols);
+			}
                         if(iceptx>=0 &&iceptx<cols && icepty>=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
                             m[i][j] = (1<<4)|m[i][j];
                         }
@@ -267,9 +289,11 @@ void calc_invariant(
                         icepty = (int)round((cepty-leasty)/deltay);
                         iceptx2= iceptx-1;
                         icepty2= icepty-1;
-                        //cylinder
-                        iceptx = smod(iceptx,cols);
-                        iceptx2 = smod(iceptx2,cols);
+                        if(top==2){
+			    //cylinder
+                            iceptx = smod(iceptx,cols);
+			    iceptx2 = smod(iceptx2,cols);
+			}
                         if(iceptx>=0 &&iceptx<cols && icepty>=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
                             m[i][j] = (1<<4)|m[i][j];
                         }
@@ -329,7 +353,7 @@ int main(int argc, char* argv[]) {
         }
         printf("]\n");
     }
-    calc_invariant(5,5,dim,dim,-2.5,-2.5,5./dim,5./dim,m);
+    calc_invariant(5,5,dim,dim,3,1,-2.5,-2.5,5./dim,5./dim,m);
 
     //calc_invariant(30,30,dim,dim,0,-2,6.28319/dim,6./dim,m);
 

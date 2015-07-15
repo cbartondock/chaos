@@ -11,9 +11,7 @@ def rmod(x, y):
 
 
 start=time.time()
-LIB = '/Users/chrisdock/Documents/chaos/ccodefromsage/invariantdynamics/ergodic.dylib'
-
-
+LIB = '/Users/martin/Documents/chaos/ccodefromsage/invariantdynamics/ergodic.dylib'
 
 grid=410
 imatrix = np.ones((grid,grid))#np.loadtxt("outputs/imatrix.txt")

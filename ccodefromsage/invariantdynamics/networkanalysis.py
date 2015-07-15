@@ -74,9 +74,10 @@ print "8"
 cg = transitive_closure(cg)
 cg.set_vertex_filter(recurrenceprop)
 cg.purge_vertices()
+vc = cg.vc_property_map("")
 print "9"
 cpos = sfdp_layout(cg)
-graph_draw(cg,pos=cpos,output="outputs/condensation_graph.ps",geometry=[1000,1000])
+graph_draw(cg,pos=cpos,vertex_fill_color=deg,output="outputs/condensation_graph.ps",geometry=[1000,1000])
 
 
 for vert in graph.vertices():

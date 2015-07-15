@@ -4,6 +4,7 @@
 #include <string.h>
 #include "../rk4/rk4.c"
 #include "../usefulfunctions/functions.c"
+
 //2D phase space functions in L1
 double f1(double x, double y) { return cos(2*M_PI*y); }
 double f2(double x, double y) { return cos(2*M_PI*x)*cos(2*M_PI*y); }

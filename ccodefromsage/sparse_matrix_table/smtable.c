@@ -70,7 +70,7 @@ void add_edge(int domindex, int imageindex, sparse_adjacency_matrix* matrix) {
     }
 
 }
-sparse_adjacency_matrix* initialize_sparse_matrix(int grid,double leastx, double leasty, double deltax, double deltay, unsigned char (*m)[grid]) {
+sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int chmap,int top,double leastx, double leasty, double deltax, double deltay, unsigned char (*m)[grid]) {
     int domnumber=0;
     for(int i=0; i<grid; i++) {
         for(int j=0; j<grid; j++) {
@@ -122,14 +122,22 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,double leastx, double
         for(int c=0; c<4; c++) {
             //double x = corners[c][0];
             //double y = corners[c][1];
-            //corners[c][1] = smod(sin(x+y)+y,2*M_PI);
-            //corners[c][0] = smod(x+y,2*M_PI);
-            //newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
-            //newcorners[c][1]=corners[c][0];
-            memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-            rk4(newcorners[c],2*M_PI,.2);
-            //newcorners[c][0] = 1*corners[c][0];
-            //newcorners[c][1] = 1*corners[c][1];
+	    if(chmap==1){
+            	corners[c][1] = smod(sin(x+y)+y,2*M_PI);
+            	corners[c][0] = smod(x+y,2*M_PI);
+	    }
+	    if(chmap==2){
+	    	memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
+	    	rk4(newcorners[c],2*M_PI,.2);
+	    }
+	    if(chmap==3){
+	    	newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+            	newcorners[c][1]=corners[c][0];
+	    }
+	    if(chmap==4){
+	    	newcorners[c][0] = 2*corners[c][0];
+            	newcorners[c][1] = .5*corners[c][1];
+            }
         }
         memcpy(&edges[0][0], &newcorners[0],sizeof(edges[0][0]));
         memcpy(&edges[0][1], &newcorners[1],sizeof(edges[0][0]));
@@ -158,10 +166,12 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,double leastx, double
                 icepty = (int)round((cepty-leasty)/deltay);
                 iceptx2= iceptx-1;
                 icepty2= icepty-1;
-                //cylinder
-                iceptx = smod(iceptx,grid);
-                iceptx2 = smod(iceptx2,grid);
-                imageindex = iceptx + grid*icepty;
+		if(top==2){
+                   //cylinder
+                   iceptx = smod(iceptx,grid);
+                   iceptx2 = smod(iceptx2,grid);
+		}
+		imageindex = iceptx + grid*icepty;
                 if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
                       add_edge(domindex,imageindex,adjmatrix);
                 }
@@ -178,11 +188,12 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,double leastx, double
                 icepty = (int)round((cepty-leasty)/deltay);
                 iceptx2= iceptx-1;
                 icepty2= icepty-1;
-
-                //cylinder
-                iceptx = smod(iceptx,grid);
-                iceptx2 = smod(iceptx2,grid);
-                imageindex = iceptx + grid*icepty;
+		if(top==2){
+                   //cylinder
+                   iceptx = smod(iceptx,grid);
+                   iceptx2 = smod(iceptx2,grid);
+		}
+		imageindex = iceptx + grid*icepty;
                 if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
                       add_edge(domindex,imageindex,adjmatrix);
                 }

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <omp.h>
 /*
  * p specifies initial conditions
  * max marks the poincare section 
