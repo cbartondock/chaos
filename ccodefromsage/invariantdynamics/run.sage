@@ -12,9 +12,9 @@ parser.add_option('-g','--graph', action='store_true',dest='graph')
 (options, args) = parser.parse_args()
 
 #required libraries
-INV = CDLL('/Users/martin/Documents/chaos/ccodefromsage/invariantdynamics/invariant4.dylib')
-RK4 = CDLL('/Users/martin/Documents/chaos/ccodefromsage/rk4/rk4.dylib')
-SAM = CDLL('/Users/martin/Documents/chaos/ccodefromsage/sparse_matrix_table/smtable.dylib')
+INV = CDLL('/Users/chrisdock/Documents/chaos/ccodefromsage/invariantdynamics/invariant4.dylib')
+RK4 = CDLL('/Users/chrisdock/Documents/chaos/ccodefromsage/rk4/rk4.dylib')
+SAM = CDLL('/Users/chrisdock/Documents/chaos/ccodefromsage/sparse_matrix_table/smtable.dylib')
 
 '''
 Parameters
