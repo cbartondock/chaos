@@ -1,1 +1,7 @@
 Makefile
+*.dylib
+*.sage.py
+*.txt
+*.ps
+*.png
+*.pdf
