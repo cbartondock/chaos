@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <omp.h>
 #include <math.h>
 #include <string.h>
-#include </Users/chrisdock/Documents/chaos/ccodefromsage/rk4/rk4.c>
+#include </Users/martin/Documents/chaos/ccodefromsage/rk4/rk4.c>
 //2D phase space functions in L1
 double f1(double x, double y) { return cos(2*M_PI*y); }
 double f2(double x, double y) { return cos(2*M_PI*x)*cos(2*M_PI*y); }
