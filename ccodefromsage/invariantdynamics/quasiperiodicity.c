@@ -5,8 +5,8 @@
 #include "../rk4/rk4.c"
 #include "../usefulfunctions/functions.c"
 //2D phase space functions in L1
-double f1(double x, double y) { return cos(2*M_PI*y); }
-double f2(double x, double y) { return cos(2*M_PI*x)*cos(2*M_PI*y); }
+double f1(double x, double y) { return sin(x); }
+double f2(double x, double y) { return sin(2*M_PI*x)*sin(4*M_PI*y); }
 double f3(double x, double y) { return sin(4*M_PI*x)*sin(4*M_PI*y); }
 double f4(double x, double y) { return sin(6*M_PI*x)*sin(4*M_PI*y); }
 double f5(double x, double y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
@@ -46,7 +46,7 @@ void convergence(int rows, int cols, int time, double leastx, double leasty,
                 //printf("x: %f, y: %f\n",x,y);
                 memset(evecs, 0, sizeof(double)*6);
                 for( t=0; t<time; t++) {
-                    for(v=0; v<6;v++) {
+                    for(v=0; v<1;v++) {
                         evecs[v]+= (*fvec[v])(x,y)*weight((double)t/(double)time);
                     }
                     xn = smod(x+y,6.283185307);
@@ -64,7 +64,7 @@ void convergence(int rows, int cols, int time, double leastx, double leasty,
 
                 }
                 for( t=0; t <time; t++) {
-                    for(v=0; v<6;v++) {
+                    for(v=0; v<1;v++) {
                         evecs[v]+= (*fvec[v])(x,y)*weight((double)t/(double)time);
                     }
                     xn = smod(x+y,6.283185307);
@@ -78,16 +78,16 @@ void convergence(int rows, int cols, int time, double leastx, double leasty,
                     y = yn;
                 }
                 diff_mag=0;
-                for(v=0; v<6; v++) {
+                for(v=0; v<1; v++) {
                     diff[v]=(evecs[v]-first[v])/wsum;
                     diff_mag+=diff[v]*diff[v];
                 }
 
-                //numzeros = (int)(-1*log(diff_mag)/log(10));
-                rate = -1*log(diff_mag)/log(2);
+                numzeros = (int)(-1*log(diff_mag)/log(10));
+                //rate = -1*log(diff_mag)/log(2);
                 //printf("numzeros: %u\n",numzeros);
                 //printf("rate: %f\n",rate);
-                m[i][j]=(unsigned char)rate;
+                m[i][j]=(unsigned char)numzeros;
             }
         }
     }

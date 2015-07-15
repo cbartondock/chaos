@@ -90,7 +90,7 @@ adj_element._fields_ = [("imageindex",c_int), ("domindex",c_int), ("imagenumber"
 
 
 class sparse_adjacency_matrix(Structure):
-    _fields_=[("domnumber",c_int),("grid",c_int),("chmap",c_int),("top",c_int),("leastx",c_double),("leasty",c_double),("deltax",c_double),("deltay",c_double), ("adjacency_lists",POINTER(POINTER(adj_element)))]
+    _fields_=[("domnumber",c_int),("grid",c_int),("leastx",c_double),("leasty",c_double),("deltax",c_double),("deltay",c_double), ("adjacency_lists",POINTER(POINTER(adj_element)))]
 
 sam_pointer = POINTER(sparse_adjacency_matrix)
 adj_pointer = POINTER(adj_element)
