@@ -6,12 +6,6 @@ from ctypes import *
 import time
 from optparse import OptionParser
 
-def rmod(x, y):
-    result = x - int(x/y)*y
-    return result if result >= 0 else result + y
-
-
-
 start=time.time()
 parser = OptionParser()
 parser.add_option('-g','--graph', action='store_true',dest='graph')
@@ -64,7 +58,7 @@ INV.calc_invariant(c_int32(maxiter),
 	   m.ctypes.data_as(c_void_p))
 print "finished invariant.c"
 w = numpy.vectorize(lambda x: x)(m)
-imgplot = plt.imshow(w,vmin=0, vmax=1,interpolation='none' if grid > 200 else 'nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
+plt.imshow(w,vmin=0, vmax=1,interpolation='none' if grid > 200 else 'nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
 plt.savefig("outputs/invariance_result.ps")
 numpy.savetxt("outputs/imatrix.txt",w)
 print("invariant saved")
@@ -102,7 +96,3 @@ if options.graph:
     outfile.close()
     free_matrix(sp)
     print "graph saved"
-
-
-    
-

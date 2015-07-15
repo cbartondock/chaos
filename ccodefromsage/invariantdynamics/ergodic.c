@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <omp.h>
 #include <math.h>
 #include <string.h>
-#include </Users/chrisdock/Documents/chaos/ccodefromsage/rk4/rk4.c>
+#include "../rk4/rk4.c"
+#include "../usefulfunctions/functions.c"
 //2D phase space functions in L1
 double f1(double x, double y) { return cos(2*M_PI*y); }
 double f2(double x, double y) { return cos(2*M_PI*x)*cos(2*M_PI*y); }
@@ -12,13 +12,6 @@ double f4(double x, double y) { return sin(6*M_PI*x)*sin(4*M_PI*y); }
 double f5(double x, double y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
 double f6(double x, double y) { return sin(8*M_PI*x)*sin(8*M_PI*y); }
 double (*fvec[6]) (double x, double y) = {f1,f2,f3,f4,f5,f6};
-
-double smod(double x, double y) {
-    int div = (int)(x/y);
-    double result = x - div*y;
-    result = (result < 0) ? result + y : result;
-    return result;
-}
 
 void partition(int rows, int cols, int time, double leastx, double leasty,
   double deltax, double deltay, int kgrid,  unsigned long (*m)[cols]) {

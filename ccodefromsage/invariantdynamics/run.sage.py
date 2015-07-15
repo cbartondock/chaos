@@ -9,12 +9,6 @@ from ctypes import *
 import time
 from optparse import OptionParser
 
-def rmod(x, y):
-    result = x - int(x/y)*y
-    return result if result >= _sage_const_0  else result + y
-
-
-
 start=time.time()
 parser = OptionParser()
 parser.add_option('-g','--graph', action='store_true',dest='graph')
