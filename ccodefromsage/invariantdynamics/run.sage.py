@@ -10,12 +10,18 @@ import time
 from optparse import OptionParser
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> b8765eddd14a5a49e68898c96ba4371b29f50df7
 #Mod function
 def rmod(x, y):
     result = x - int(x/y)*y
     return result if result >= _sage_const_0  else result + y
 
+<<<<<<< HEAD
+>>>>>>> b8765eddd14a5a49e68898c96ba4371b29f50df7
+=======
 >>>>>>> b8765eddd14a5a49e68898c96ba4371b29f50df7
 start=time.time()
 parser = OptionParser()

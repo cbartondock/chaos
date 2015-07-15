@@ -6,7 +6,6 @@ from ctypes import *
 import time
 from optparse import OptionParser
 
-
 start=time.time()
 parser = OptionParser()
 parser.add_option('-g','--graph', action='store_true',dest='graph')
