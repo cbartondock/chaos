@@ -122,21 +122,21 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int chmap,int top,dou
         for(int c=0; c<4; c++) {
             //double x = corners[c][0];
             //double y = corners[c][1];
-	    /*if(chmap==1){
-            	corners[c][1] = smod(sin(x+y)+y,2*M_PI);
-            	corners[c][0] = smod(x+y,2*M_PI);
-	    }*/
-	    if(chmap==2){
-	    	memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-	    	rk4(newcorners[c],2*M_PI,.2);
-	    }
-	    if(chmap==3){
-	    	newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
-            	newcorners[c][1]=corners[c][0];
-	    }
-	    if(chmap==4){
-	    	newcorners[c][0] = 2*corners[c][0];
-            	newcorners[c][1] = .5*corners[c][1];
+            /*if(chmap==1){
+              corners[c][1] = smod(sin(x+y)+y,2*M_PI);
+              corners[c][0] = smod(x+y,2*M_PI);
+              }*/
+            if(chmap==2){
+                memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
+                rk4(newcorners[c],2*M_PI,.2);
+            }
+            if(chmap==3){
+                newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                newcorners[c][1]=corners[c][0];
+            }
+            if(chmap==4){
+                newcorners[c][0] = 2*corners[c][0];
+                newcorners[c][1] = .5*corners[c][1];
             }
         }
         memcpy(&edges[0][0], &newcorners[0],sizeof(edges[0][0]));
@@ -166,18 +166,18 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int chmap,int top,dou
                 icepty = (int)round((cepty-leasty)/deltay);
                 iceptx2= iceptx-1;
                 icepty2= icepty-1;
-		if(top==2){
-                   //cylinder
-                   iceptx = smod(iceptx,grid);
-                   iceptx2 = smod(iceptx2,grid);
-		}
-		imageindex = iceptx + grid*icepty;
+                if(top==2){
+                    //cylinder
+                    iceptx = smod(iceptx,grid);
+                    iceptx2 = smod(iceptx2,grid);
+                }
+                imageindex = iceptx + grid*icepty;
                 if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
-                      add_edge(domindex,imageindex,adjmatrix);
+                    add_edge(domindex,imageindex,adjmatrix);
                 }
                 imageindex = iceptx + grid*icepty2;
                 if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
-                      add_edge(domindex,imageindex,adjmatrix);
+                    add_edge(domindex,imageindex,adjmatrix);
                 }
             }
             for(int jv=jvmin; jv<=jvmax; jv++) {
@@ -188,18 +188,18 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int chmap,int top,dou
                 icepty = (int)round((cepty-leasty)/deltay);
                 iceptx2= iceptx-1;
                 icepty2= icepty-1;
-		if(top==2){
-                   //cylinder
-                   iceptx = smod(iceptx,grid);
-                   iceptx2 = smod(iceptx2,grid);
-		}
-		imageindex = iceptx + grid*icepty;
+                if(top==2){
+                    //cylinder
+                    iceptx = smod(iceptx,grid);
+                    iceptx2 = smod(iceptx2,grid);
+                }
+                imageindex = iceptx + grid*icepty;
                 if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
-                      add_edge(domindex,imageindex,adjmatrix);
+                    add_edge(domindex,imageindex,adjmatrix);
                 }
                 imageindex = iceptx2 + grid*icepty;
                 if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
-                      add_edge(domindex,imageindex,adjmatrix);
+                    add_edge(domindex,imageindex,adjmatrix);
                 }
 
             }
@@ -209,7 +209,6 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int chmap,int top,dou
         }
     }
     return adjmatrix;
-    return NULL;
 }
 
 void free_matrix(sparse_adjacency_matrix* matrix) {
@@ -254,61 +253,61 @@ int domnumber(sparse_adjacency_matrix* matrix) {
 }
 
 /*sparse_adjacency_matrix* quadruple_precision(sparse_adjacency_matrix* oldmatrix) {
-    sparse_adjacency_matrix* newmatrix;
-    newmatrix = (sparse_adjacency_matrix*) malloc(sizeof(sparse_adjacency_matrix));
-    newmatrix->adjacency_lists = (adj_element**) malloc(sizeof(adj_element*)*(oldmatrix->domnumber)*4);
-    newmatrix->grid = 2*(oldmatrix->grid);
-    newmatrix->domnumber = 4*(oldmatrix->domnumber);
-    newmatrix->leastx = oldmatrix->leastx;
-    newmatrix->leasty = oldmatrix->leasty;
-    newmatrix->deltax = oldmatrix->deltax/2.;
-    newmatrix->deltay = oldmatrix->deltay/2.;
-    adj_element* newelement;
-    int oldgrid = oldmatrix->grid;
-    int newgrid = newmatrix->grid;
-    int olddomindex;
-    int domindices[4]={0,0,0,0};
-    for(int n=0; n < oldmatrix->domnumber; n++) {
-        olddomindex = (oldmatrix->adjacency_lists)[n]->domindex;
-        domindices[0] = 2*(olddomindex % oldgrid) + 2*(olddomindex/oldgrid)*(newgrid);
-        domindices[1] = 2*(olddomindex % oldgrid) + 1 + 2*(olddomindex/oldgrid)*(newgrid);
-        domindices[2] = 2*(olddomindex % oldgrid) + (2*(olddomindex/oldgrid) + 1)*(newgrid);
-        domindices[3] = 2*(olddomindex % oldgrid) + 1 + (2*(olddomindex/oldgrid) + 1)*(newgrid);
-        for(int k=0; k<4; k++) {
-            newelement = (adj_element*) malloc(sizeof(adj_element));
-            newelement->domindex = domindices[k];
-            newelement->imageindex = -1;
-            newelement->imagenumber = 0;
-            newelement->next = newelement;
-            newelement->prev = newelement;
-            (newmatrix->adjacency_lists)[4*n+k]=newelement;
-        }
-    }
-    int i,j,newdomindex,newimageindex;
-    double x, y, xn, yn;
-    adj_element* current;
-    for(int n=0; n < oldmatrix->domnumber; n++) {
-        olddomindex = (oldmatrix->adjacency_lists)[n]->domindex;
-        for(int m=4*n; m < 4*n+4; m++) {
-            newdomindex = ((newmatrix->adjacency_lists)[m]->domindex);
-            i = newdomindex/(newmatrix->grid);
-            j = newdomindex%(newmatrix->grid);
-            for(int s=0; s <=newmatrix->numsamples; s++){
-                for(int s2=0; s2 <=newmatrix->numsamples; s2++) {
-                    x = newmatrix->leastx + j*(newmatrix->deltax) + newmatrix->deltax*((double)s/(double)newmatrix->numsamples);
-                    y = newmatrix->leasty + i*(newmatrix->deltay) + newmatrix->deltay*((double)s2/(double)newmatrix->numsamples);
-                    xn = (*(newmatrix->fx))(x,y);
-                    yn = (*(newmatrix->fy))(x,y);
-                    newimageindex = (int)floor((xn-(newmatrix->leastx))/(newmatrix->deltax)) + (newmatrix->grid)*(int)floor((yn-(newmatrix->leasty))/newmatrix->deltay);
-                    if(exists_vertex(newimageindex,newmatrix) && !exists_edge(newdomindex,newimageindex,newmatrix)) {
-                        add_edge(newdomindex,newimageindex,newmatrix);
-                    }
-                }
-            }
-        }
-    }
-    return newmatrix;
-}*/
+  sparse_adjacency_matrix* newmatrix;
+  newmatrix = (sparse_adjacency_matrix*) malloc(sizeof(sparse_adjacency_matrix));
+  newmatrix->adjacency_lists = (adj_element**) malloc(sizeof(adj_element*)*(oldmatrix->domnumber)*4);
+  newmatrix->grid = 2*(oldmatrix->grid);
+  newmatrix->domnumber = 4*(oldmatrix->domnumber);
+  newmatrix->leastx = oldmatrix->leastx;
+  newmatrix->leasty = oldmatrix->leasty;
+  newmatrix->deltax = oldmatrix->deltax/2.;
+  newmatrix->deltay = oldmatrix->deltay/2.;
+  adj_element* newelement;
+  int oldgrid = oldmatrix->grid;
+  int newgrid = newmatrix->grid;
+  int olddomindex;
+  int domindices[4]={0,0,0,0};
+  for(int n=0; n < oldmatrix->domnumber; n++) {
+  olddomindex = (oldmatrix->adjacency_lists)[n]->domindex;
+  domindices[0] = 2*(olddomindex % oldgrid) + 2*(olddomindex/oldgrid)*(newgrid);
+  domindices[1] = 2*(olddomindex % oldgrid) + 1 + 2*(olddomindex/oldgrid)*(newgrid);
+  domindices[2] = 2*(olddomindex % oldgrid) + (2*(olddomindex/oldgrid) + 1)*(newgrid);
+  domindices[3] = 2*(olddomindex % oldgrid) + 1 + (2*(olddomindex/oldgrid) + 1)*(newgrid);
+  for(int k=0; k<4; k++) {
+  newelement = (adj_element*) malloc(sizeof(adj_element));
+  newelement->domindex = domindices[k];
+  newelement->imageindex = -1;
+  newelement->imagenumber = 0;
+  newelement->next = newelement;
+  newelement->prev = newelement;
+  (newmatrix->adjacency_lists)[4*n+k]=newelement;
+  }
+  }
+  int i,j,newdomindex,newimageindex;
+  double x, y, xn, yn;
+  adj_element* current;
+  for(int n=0; n < oldmatrix->domnumber; n++) {
+  olddomindex = (oldmatrix->adjacency_lists)[n]->domindex;
+  for(int m=4*n; m < 4*n+4; m++) {
+  newdomindex = ((newmatrix->adjacency_lists)[m]->domindex);
+  i = newdomindex/(newmatrix->grid);
+  j = newdomindex%(newmatrix->grid);
+  for(int s=0; s <=newmatrix->numsamples; s++){
+  for(int s2=0; s2 <=newmatrix->numsamples; s2++) {
+  x = newmatrix->leastx + j*(newmatrix->deltax) + newmatrix->deltax*((double)s/(double)newmatrix->numsamples);
+  y = newmatrix->leasty + i*(newmatrix->deltay) + newmatrix->deltay*((double)s2/(double)newmatrix->numsamples);
+  xn = (*(newmatrix->fx))(x,y);
+  yn = (*(newmatrix->fy))(x,y);
+  newimageindex = (int)floor((xn-(newmatrix->leastx))/(newmatrix->deltax)) + (newmatrix->grid)*(int)floor((yn-(newmatrix->leasty))/newmatrix->deltay);
+  if(exists_vertex(newimageindex,newmatrix) && !exists_edge(newdomindex,newimageindex,newmatrix)) {
+  add_edge(newdomindex,newimageindex,newmatrix);
+  }
+  }
+  }
+  }
+  }
+  return newmatrix;
+  }*/
 
 double henonx(double x, double y) {
     return 1.4 - x*x + .3*y;
@@ -319,27 +318,23 @@ double henony(double x, double y) {
 
 /*
 int main(char* args) {
-    printf("running main\n");
-    int grid=2;
-    unsigned char** m;
-    m= (unsigned char**) malloc(sizeof(unsigned char*)*grid);
-    for(int i=0; i < grid; i++) {
-        m[i] = (unsigned char *) malloc(sizeof(unsigned char)*grid);
-    }
-    m[0][0]=1; m[0][1]=1; m[1][0]=1; m[1][1] = 1;
-    sparse_adjacency_matrix* sam = initialize_sparse_matrix(grid,5,-2,-2,2,2,m,henonx,henony);
-    sam = quadruple_precision(quadruple_precision(sam));
-    printf("sam's edges are: [");
-    adj_element* current;
-    for(int i=0; i <sam->domnumber; i++) {
-        current = (sam->adjacency_lists)[i]->next;
-        while(current->imageindex!=-1) {
-            printf("(%d,%d), ",current->domindex,current->imageindex);
-            current=current->next;
-        }
-    }
-    printf("]\n");
-    printf("edge (2,3) exists? -- %u\n", exists_edge(2,3,sam));
-    printf("edge (1,3) exists? -- %u\n", exists_edge(1,3,sam));
-    free(sam);
+   printf("running main\n");
+   int grid=2;
+   unsigned char  (*m)[grid];
+   m[0][0]=1; m[0][1]=1; m[1][0]=1; m[1][1] = 1;
+   sparse_adjacency_matrix* sam = initialize_sparse_matrix(grid,2,5,-2,-2,2,2,m);
+   //sam = quadruple_precision(quadruple_precision(sam));
+   printf("sam's edges are: [");
+   adj_element* current;
+   for(int i=0; i <sam->domnumber; i++) {
+   current = (sam->adjacency_lists)[i]->next;
+   while(current->imageindex!=-1) {
+   printf("(%d,%d), ",current->domindex,current->imageindex);
+   current=current->next;
+   }
+   }
+   printf("]\n");
+   printf("edge (2,3) exists? -- %u\n", exists_edge(2,3,sam));
+   printf("edge (1,3) exists? -- %u\n", exists_edge(1,3,sam));
+   free(sam);
 }*/

@@ -83,7 +83,7 @@ void convergence(int rows, int cols, int time, double leastx, double leasty,
                     diff_mag+=diff[v]*diff[v];
                 }
 
-                numzeros = (int)(-1*log(diff_mag)/log(10));
+                numzeros = (int)((-1*log(diff_mag))/log(10));
                 //rate = -1*log(diff_mag)/log(2);
                 //printf("numzeros: %u\n",numzeros);
                 //printf("rate: %f\n",rate);

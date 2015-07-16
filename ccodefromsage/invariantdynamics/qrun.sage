@@ -21,7 +21,7 @@ xmax=2*np.pi;
 ymax=2*np.pi
 deltax=(xmax-xmin)/grid
 deltay=(ymax-ymin)/grid
-totaltime = 1000
+totaltime = 100000
 
 QUAS.convergence(c_int32(grid),
                  c_int32(grid),
@@ -36,6 +36,8 @@ print(m)
 plt.imshow(w,vmin=0,interpolation='nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
 plt.colorbar()
 plt.savefig("outputs/convergence_result.ps")
-
+plt.clf()
+plt.hist(m.flatten(), 50, histtype='stepfilled')
+plt.savefig("outputs/convergence_histogram.ps")
 end=time.time()
 print(end-start)

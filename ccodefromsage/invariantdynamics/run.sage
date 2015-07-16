@@ -22,29 +22,29 @@ SAM = CDLL(libraries[2].strip())
 Parameters
 '''
 #Choose map: (1=Standard,2=Pendulum,3=Henon,4=Saddle)
-chmap = 2
+chmap = 4
 
-#Topology: (1=Rectangle,2=Cylinder)
-top = 2
+#Topology: (1=Plane,2=Cylinder)
+top = 1
 
 maxiter = 30
 #Choose grid size:
-grid = 1000
+grid = 50
 print "grid: "+str(grid)+", maxiter: "+str(maxiter)
 
 #Choose dimensions:
-"""
+
 ymin=-2.5
 ymax=2.5      #Henon
 xmin=-2.5
 xmax=2.5
-"""
 
+"""
 ymin = -2
 ymax = 4        #Pendulum
 xmin = 0
 xmax = 2*numpy.pi
-
+"""
 """
 ymin = 0
 ymax = 2*numpy.pi     #Standard

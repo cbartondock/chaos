@@ -35,8 +35,8 @@ void calc_invariant(
         int maxiterr,
         int cols,
         int rows,
-	int chmap,
-	int top,
+        int chmap,
+        int top,
         double leastx,
         double leasty,
         double deltax,
@@ -46,7 +46,7 @@ void calc_invariant(
 
     //    FILE *f = fopen("test.txt", "w");
     //    FILE *f2 = fopen("test2.txt", "w");
-    int i,j;
+    int i,j,c;
     unsigned char keep=1;
     double x, y, xn, yn;
     double t;
@@ -62,11 +62,6 @@ void calc_invariant(
     double tiv, tjv, ceptx, cepty;
     int jvmin,jvmax,ivmin,ivmax;
     int iceptx,icepty,iceptx2,icepty2;
-
-    double slopes[4]; // lo1 lo2 o1r o2r
-    int c,c1,c2;
-    int g=0;
-    int ti,bi;
     //#pragma omp parallel
     printf("initials, deltax: %f, deltay: %f, leastx: %f, leasty: %f\n",deltax,deltay,leastx,leasty);
     while(keep && k<maxiterf) {
@@ -79,32 +74,41 @@ void calc_invariant(
                 if(! (m[i][j] & 0xf)) {
                     continue;
                 }
-                //   printf("\nimage of (%u,%u) is:\n",i,j);
+                printf("\nimage of (%u,%u) is:\n",i,j);
                 count++;
                 corners[0][0] = leastx + j*deltax; corners[0][1] = leasty + i*deltay; //tl
                 corners[1][0] = leastx + (j+1)* deltax; corners[1][1] = leasty + i*deltay; //tr
                 corners[2][0] = leastx + j*deltax; corners[2][1] = leasty + (i+1)*deltay; //bl
                 corners[3][0] = leastx + (j+1)*deltax; corners[3][1] = leasty + (i+1)*deltay; //br
+                printf("corners are: [");
                 for(c=0; c<4; c++) {
-		    //double x = corners[c][0];
-                    //double y = corners[c][1];
-		    if(chmap==1){
-                    	corners[c][1] = smod(sin(x+y)+y,2*M_PI);
-                    	corners[c][0] = smod(x+y,2*M_PI);
-		    }
-		    if(chmap==2){
-		    	memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-		    	rk4(newcorners[c],2*M_PI,.2);
-		    }
-		    if(chmap==3){
-		    	newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
-                    	newcorners[c][1]=corners[c][0];
-		    }
-		    if(chmap==4){
-                    	newcorners[c][0] = 2*corners[c][0];
-                    	newcorners[c][1] = .5*corners[c][1];
-		    }
+                    printf("(%f,%f), ", corners[c][1],corners[c][0]);
                 }
+                printf("]\n");
+                for(c=0; c<4; c++) {
+                    if(chmap==1){
+                        newcorners[c][1] = smod(sin(corners[c][0]+corners[c][1])+corners[c][1],2*M_PI);
+                        newcorners[c][0] = smod(corners[c][0]+corners[c][1],2*M_PI);
+                    }
+                    if(chmap==2){
+                        memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
+                        rk4(newcorners[c],2*M_PI,.2);
+                    }
+                    if(chmap==3){
+                        newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                        newcorners[c][1]=corners[c][0];
+                    }
+                    if(chmap==4){
+                        newcorners[c][0] = 2*corners[c][0];
+                        newcorners[c][1] = .5*corners[c][1];
+                    }
+                }
+                printf("new corners are: [");
+                for(c=0; c<4; c++) {
+                    printf("(%f,%f), ", newcorners[c][1],newcorners[c][0]);
+                }
+                printf("]\n");
+
                 memcpy(&edges[0][0], &newcorners[0],sizeof(edges[0][0]));
                 memcpy(&edges[0][1], &newcorners[1],sizeof(edges[0][0]));
                 memcpy(&edges[1][0], &newcorners[1],sizeof(edges[0][0]));  //   |---->|
@@ -118,28 +122,29 @@ void calc_invariant(
                     memcpy(&edge,&edges[e],sizeof(edge));
                     diff[0] = edge[1][0]-edge[0][0];
                     diff[1] = edge[1][1]-edge[0][1];
-                    // printf("edge: (%f,%f)-->(%f,%f), diff: (%f,%f)\n",edge[0][0],edge[0][1],edge[1][0],edge[1][1],diff[0],diff[1]);
+                    printf("edge: (%f,%f)-->(%f,%f), diff: (%f,%f)\n",edge[0][1],edge[0][0],edge[1][1],edge[1][0],diff[1],diff[0]);
                     ivmin = (int)ceil((min(edge[0][1],edge[1][1])-leasty)/deltay);
                     ivmax = (int)floor((max(edge[0][1],edge[1][1])-leasty)/deltay);
                     jvmin = (int)ceil((min(edge[0][0],edge[1][0])-leastx)/deltax);
                     jvmax = (int)floor((max(edge[0][0],edge[1][0])-leastx)/deltax);
-                    for(int iv=ivmin; iv<=ivmax; iv++) {
+                    printf("ivmin: %u, ivmax: %u\n",ivmin,ivmax);
+                    for(int iv=ivmin; iv<ivmax; iv++) {
                         tiv = (leasty+iv*deltay-edge[0][1])/(diff[1]);
 
                         ceptx = edge[0][0] + diff[0]*tiv;
                         cepty = edge[0][1] + diff[1]*tiv;
-                        // printf("tiv: %f\n",tiv);
-                        // printf("ceptx: %f, cepty: %f\n",ceptx,cepty);
-                        iceptx = (int)round((ceptx-leastx)/deltax);
+                        printf("tiv: %f\n",tiv);
+                        printf("ceptx: %f, cepty: %f\n",ceptx,cepty);
+                        iceptx = (int)floor((ceptx-leastx)/deltax);
                         icepty = (int)round((cepty-leasty)/deltay);
                         iceptx2= iceptx-1;
                         icepty2= icepty-1;
                         if(top==2){
                             //cylinder
-			    iceptx = smod(iceptx,cols);
+                            iceptx = smod(iceptx,cols);
                             iceptx2 = smod(iceptx2,cols);
-			}
-			// printf("iv: %d, iceptx: %d, icepty %d\n", iv,iceptx,icepty);
+                        }
+                        printf("iv: %d, iceptx: %d, icepty %d\n", iv,iceptx,icepty);
                         if(iceptx>=0 &&iceptx<cols && icepty >=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
                             m[icepty][iceptx] = (1<<4)|m[icepty][iceptx];
                         }
@@ -147,22 +152,24 @@ void calc_invariant(
                             m[icepty2][iceptx] = (1<<4)|m[icepty2][iceptx];
                         }
                     }
-                    for(int jv=jvmin; jv<=jvmax; jv++) {
+                    printf("jvmin: %u, jvmax: %u\n",ivmin,ivmax);
+
+                    for(int jv=jvmin; jv<jvmax; jv++) {
                         tjv = (leastx+jv*deltax-edge[0][0])/(diff[0]);
 
                         ceptx = edge[0][0] + diff[0]*tjv;
                         cepty = edge[0][1] + diff[1]*tjv;
 
                         iceptx = (int)round((ceptx-leastx)/deltax);
-                        icepty = (int)round((cepty-leasty)/deltay);
+                        icepty = (int)floor((cepty-leasty)/deltay);
                         iceptx2= iceptx-1;
                         icepty2= icepty-1;
-			if(top==2){
+                        if(top==2){
                             //cylinder
                             iceptx = smod(iceptx,cols);
                             iceptx2 = smod(iceptx2,cols);
-			}
-                        //   printf("jv: %d, iceptx: %d, icepty %d\n", jv,iceptx,icepty);
+                        }
+                        printf("jv: %d, iceptx: %d, icepty %d\n", jv,iceptx,icepty);
 
                         if(iceptx>=0 &&iceptx<cols && icepty>=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
                             m[icepty][iceptx] = (1<<4)|m[icepty][iceptx];
@@ -172,6 +179,7 @@ void calc_invariant(
                         }
                     }
                     if(jvmax < jvmin && ivmax < ivmin  && ivmax>=0 && ivmax<rows && jvmax>=0 && jvmax <cols && m[ivmax][jvmax]==1) {
+                        printf("crucial case\n");
                         m[ivmax][jvmax] = (1<<4)|m[ivmax][jvmax];
                     }
                 }
@@ -202,45 +210,54 @@ void calc_invariant(
                 printf("%u,",m[i][j]);
             }
             printf("]\n");
-        }}
+        }
+    }
+
     keep=1; k=0;
     while(keep && k<maxiterr) {
         keep=0;
         k++;
         count=0;
-        //#pragma omp parallel for private(i,j,x,y,xn,yn,row,col)
         for(i = 0;i < rows; i++) {
             for(j = 0; j< cols; j++) {
                 if(! (m[i][j] & 0xf)) {
                     continue;
                 }
-                //printf("image of (%u,%u) is:\n\n",i,j);
+                printf("\nimage of (%u,%u) is:\n",i,j);
                 count++;
                 corners[0][0] = leastx + j*deltax; corners[0][1] = leasty + i*deltay; //tl
                 corners[1][0] = leastx + (j+1)* deltax; corners[1][1] = leasty + i*deltay; //tr
                 corners[2][0] = leastx + j*deltax; corners[2][1] = leasty + (i+1)*deltay; //bl
                 corners[3][0] = leastx + (j+1)*deltax; corners[3][1] = leasty + (i+1)*deltay; //br
-
+                printf("corners are: [");
                 for(c=0; c<4; c++) {
-                    //double x = corners[c][0];
-                    //double y = corners[c][1];
-                    if(chmap==1){
-		    	corners[c][1] = smod(sin(x+y)+y,2*M_PI);
-                    	corners[c][0] = smod(x+y,2*M_PI);
-		    }
-		    if(chmap==2){
-		    	memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-		    	rk4(newcorners[c],2*M_PI,.2);
-		    }
-		    if(chmap==3){
-		    	newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
-                    	newcorners[c][1]=corners[c][0];
-		    }
-		    if(chmap==4){
-		    	newcorners[c][0] = 2*corners[c][0];
-                    	newcorners[c][1] = .5*corners[c][1];
-	            }
+                    printf("(%f,%f), ", corners[c][1],corners[c][0]);
                 }
+                printf("]\n");
+                for(c=0; c<4; c++) {
+                    if(chmap==1){
+                        newcorners[c][1] = smod(sin(corners[c][0]+corners[c][1])+corners[c][1],2*M_PI);
+                        newcorners[c][0] = smod(corners[c][0]+corners[c][1],2*M_PI);
+                    }
+                    if(chmap==2){
+                        memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
+                        rk4(newcorners[c],2*M_PI,.2);
+                    }
+                    if(chmap==3){
+                        newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                        newcorners[c][1]=corners[c][0];
+                    }
+                    if(chmap==4){
+                        newcorners[c][0] = 2*corners[c][0];
+                        newcorners[c][1] = .5*corners[c][1];
+                    }
+                }
+                printf("new corners are: [");
+                for(c=0; c<4; c++) {
+                    printf("(%f,%f), ", newcorners[c][1],newcorners[c][0]);
+                }
+                printf("]\n");
+
                 memcpy(&edges[0][0], &newcorners[0],sizeof(edges[0][0]));
                 memcpy(&edges[0][1], &newcorners[1],sizeof(edges[0][0]));
                 memcpy(&edges[1][0], &newcorners[1],sizeof(edges[0][0]));  //   |---->|
@@ -249,51 +266,60 @@ void calc_invariant(
                 memcpy(&edges[2][1], &newcorners[2],sizeof(edges[0][0]));  //
                 memcpy(&edges[3][0], &newcorners[2],sizeof(edges[0][0]));
                 memcpy(&edges[3][1], &newcorners[0],sizeof(edges[0][0]));
+
                 for(int e=0; e<4; e++) {
                     memcpy(&edge,&edges[e],sizeof(edge));
                     diff[0] = edge[1][0]-edge[0][0];
                     diff[1] = edge[1][1]-edge[0][1];
+                    printf("edge: (%f,%f)-->(%f,%f), diff: (%f,%f)\n",edge[0][1],edge[0][0],edge[1][1],edge[1][0],diff[1],diff[0]);
                     ivmin = (int)ceil((min(edge[0][1],edge[1][1])-leasty)/deltay);
                     ivmax = (int)floor((max(edge[0][1],edge[1][1])-leasty)/deltay);
                     jvmin = (int)ceil((min(edge[0][0],edge[1][0])-leastx)/deltax);
                     jvmax = (int)floor((max(edge[0][0],edge[1][0])-leastx)/deltax);
-                    for(int iv=ivmin; iv<=ivmax; iv++) {
-
+                    printf("ivmin: %u, ivmax: %u\n",ivmin,ivmax);
+                    for(int iv=ivmin; iv<ivmax; iv++) {
                         tiv = (leasty+iv*deltay-edge[0][1])/(diff[1]);
+
                         ceptx = edge[0][0] + diff[0]*tiv;
                         cepty = edge[0][1] + diff[1]*tiv;
-                        iceptx = (int)round((ceptx-leastx)/deltax);
-                        icepty = (int)round((cepty-leasty)/deltay);
-                        iceptx2= iceptx-1;
-                        icepty2= icepty-1;
-			if(top==2){
-                            //cylinder
-                            iceptx = smod(iceptx,cols);
-                            iceptx2 = smod(iceptx2,cols);
-			}
-                        if(iceptx>=0 &&iceptx<cols && icepty>=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
-                            m[i][j] = (1<<4)|m[i][j];
-                        }
-                        if(iceptx>=0 &&iceptx<cols && icepty2>=0 && icepty2<rows && 0xf&m[icepty2][iceptx]) {
-                            m[i][j] = (1<<4)|m[i][j];
-                        }
-
-                    }
-                    for(int jv=jvmin; jv<=jvmax; jv++) {
-
-                        tjv = (leastx+jv*deltax-edge[0][0])/(diff[0]);
-                        ceptx = edge[0][0] + diff[0]*tjv;
-                        cepty = edge[0][1] + diff[1]*tjv;
-
-                        iceptx = (int)round((ceptx-leastx)/deltax);
+                        printf("tiv: %f\n",tiv);
+                        printf("ceptx: %f, cepty: %f\n",ceptx,cepty);
+                        iceptx = (int)floor((ceptx-leastx)/deltax);
                         icepty = (int)round((cepty-leasty)/deltay);
                         iceptx2= iceptx-1;
                         icepty2= icepty-1;
                         if(top==2){
-			    //cylinder
+                            //cylinder
                             iceptx = smod(iceptx,cols);
-			    iceptx2 = smod(iceptx2,cols);
-			}
+                            iceptx2 = smod(iceptx2,cols);
+                        }
+                        printf("iv: %d, iceptx: %d, icepty %d\n", iv,iceptx,icepty);
+                        if(iceptx>=0 &&iceptx<cols && icepty >=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
+                            m[i][j] = (1<<4)|m[i][j];
+                        }
+                        if(iceptx>=0 &&iceptx<cols && icepty2 >=0 && icepty2<rows && 0xf&m[icepty2][iceptx]) {
+                            m[i][j] = (1<<4)|m[i][j];
+                        }
+                    }
+                    printf("jvmin: %u, jvmax: %u\n",ivmin,ivmax);
+
+                    for(int jv=jvmin; jv<jvmax; jv++) {
+                        tjv = (leastx+jv*deltax-edge[0][0])/(diff[0]);
+
+                        ceptx = edge[0][0] + diff[0]*tjv;
+                        cepty = edge[0][1] + diff[1]*tjv;
+
+                        iceptx = (int)round((ceptx-leastx)/deltax);
+                        icepty = (int)floor((cepty-leasty)/deltay);
+                        iceptx2= iceptx-1;
+                        icepty2= icepty-1;
+                        if(top==2){
+                            //cylinder
+                            iceptx = smod(iceptx,cols);
+                            iceptx2 = smod(iceptx2,cols);
+                        }
+                        printf("jv: %d, iceptx: %d, icepty %d\n", jv,iceptx,icepty);
+
                         if(iceptx>=0 &&iceptx<cols && icepty>=0 && icepty<rows && 0xf&m[icepty][iceptx]) {
                             m[i][j] = (1<<4)|m[i][j];
                         }
@@ -301,12 +327,11 @@ void calc_invariant(
                             m[i][j] = (1<<4)|m[i][j];
                         }
                     }
+                    if(jvmax <= jvmin && ivmax <= ivmin  && ivmax>=0 && ivmax<rows && jvmax>=0 && jvmax <cols && m[ivmax][jvmax]==1) {
+                        printf("crucial case 2\n");
+                        m[ivmax][jvmax] = (1<<4)|m[ivmax][jvmax];
+                    }
                 }
-
-                if(jvmax < jvmin && ivmax < ivmin  && ivmax>=0 && ivmax<rows && jvmax>=0 && jvmax <cols && m[ivmax][jvmax]==1) {
-                    m[i][j] = (1<<4)|m[i][j];
-                }
-
             }
         }
         printf("num hit reverse: %u\n",count);
@@ -339,7 +364,7 @@ void calc_invariant(
 
 
 int main(int argc, char* argv[]) {
-    int dim = 50;
+    int dim = 5;
     unsigned char m[dim][dim];
     for(int i=0; i < dim; ++i) {
         for(int j=0; j<dim;++j) {
@@ -353,7 +378,7 @@ int main(int argc, char* argv[]) {
         }
         printf("]\n");
     }
-    calc_invariant(5,5,dim,dim,3,1,-2.5,-2.5,5./dim,5./dim,m);
+    calc_invariant(5,5,dim,dim,4,1,-2.5,-2.5,5./dim,5./dim,m);
 
     //calc_invariant(30,30,dim,dim,0,-2,6.28319/dim,6./dim,m);
 
