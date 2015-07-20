@@ -18,19 +18,16 @@ imatrix = np.loadtxt("outputs/imatrix.txt").astype('uint')
 print "2"
 graph = Graph()
 graph.add_vertex(len(keys))
-summable = graph.new_vertex_property("int")
-sequence_position = graph.new_vertex_property("int")
-matrix_position = graph.new_vertex_property("vector<int>")
-selfloop = graph.new_vertex_property("int")
-graph.vertex_properties["seqpos"] = sequence_position
-graph.vertex_properties["matpos"] = matrix_position
-graph.vertex_properties["summable"] = summable
-graph.vertex_properties["selfloop"] = selfloop
+
+graph.vertex_properties["seqpos"] = graph.new_vertex_property("int")
+graph.vertex_properties["matpos"] = graph.new_vertex_property("vector<int>")
+graph.vertex_properties["summable"] = graph.new_vertex_property("int")
+graph.vertex_properties["selfloop"] = graph.new_vertex_property("int")
 print "4"
 for i in range(0,graph.num_vertices()):
     graph.vp["summable"][graph.vertex(i)] = 1
     graph.vp["seqpos"][graph.vertex(i)] = keys[i]
-    graph.vp["matpos"][graph.vertex(i)] = (keys[i]/grid, keys[i]%grid)
+    graph.vp["matpos"][graph.vertex(i)] = list((keys[i]/grid, keys[i]%grid))
 
 print "5"
 
@@ -42,45 +39,49 @@ for dom in keys:
         graph.add_edge(access_dict[dom],access_dict[im])
 
 for v in graph.vertices():
-    if graph.edge(i,i) is None:
-        graph.vp["selfloop"][graph.vertex(i)] = 0
-    else:
-        graph.vp["selfloop"][graph.vertex(i)] = 1
+    if graph.edge(v,v) is not None:
+        graph.vp["selfloop"][v] = 1
         print "found self loop!"
 
 print "6"
-#pos = random_layout(graph)
-#graph_draw(graph, pos=pos,output ="outputs/graph.ps")
+if graph.num_vertices()<150:
+    posg = sfdp_layout(graph)
+    graph_draw(graph, posg,output ="outputs/graph.ps")
+    interactive_window(graph,posg, geometry=(1000,1000),display_props=[graph.vp["matpos"],graph.vp["selfloop"]],display_props_size=16,vertex_size=15,edge_pen_width=2)
 print "7"
-components, histogram = label_components(graph)
+components = label_components(graph)[0]
 
 cg, community, vcount, ecount, va, ea = condensation_graph(graph, components, avprops = [graph.vp["summable"], graph.vp["matpos"],graph.vp["selfloop"]])
 
 
 
 
-numprop = va[0]
-sumposprop = va[1]
-avposprop = graph.new_vertex_property("string")
-selfloopprop = va[2]
-recurrenceprop = graph.new_vertex_property("bool")
+cg = transitive_closure(cg)
+
+cg.vertex_properties["num"] = va[0]
+cg.vertex_properties["numloops"] = va[2]
+cg.vertex_properties["avpos"] = cg.new_vertex_property("string")
+cg.vertex_properties["rec"]=cg.new_vertex_property("bool")
+
 for cv in cg.vertices():
-    if selfloopprop[cv] + numprop[cv] > 1:
-        recurrenceprop[cv] = True
+    cg.vp["avpos"][cv] = str([float(coord)/float(cg.vp["num"][cv]*grid) for coord in va[1][cv]])
+    if cg.vp["numloops"][cv] + cg.vp["num"][cv] > 1:
+        cg.vp["rec"][cv] = 1
     else:
-        recurrenceprop[cv] = False
+        cg.vp["rec"][cv] = 0
+
+print(cg.vp["num"])
+print(cg.vp["numloops"])
+print(cg.vp["rec"])
 
 print "8"
-cg = transitive_closure(cg)
-cg.set_vertex_filter(recurrenceprop)
+print(cg.vp["rec"])
+cg.set_vertex_filter(cg.vp["rec"])
 cg.purge_vertices()
 print "9"
 cpos = sfdp_layout(cg)
 graph_draw(cg,pos=cpos,output="outputs/condensation_graph.ps",geometry=[1000,1000])
 
-
-for vert in graph.vertices():
-    avposprop[vert] = str([float(coord)/float(numprop[vert]*grid) for coord in sumposprop[vert]])
 
 def callback(widget, g, keyval, picked, pos, vprops, eprops):
     if picked!=None and keyval==104L:
@@ -103,7 +104,7 @@ def callback(widget, g, keyval, picked, pos, vprops, eprops):
         extent=[p[1],p[1]+p[0]*p[3],p[2],p[2]+p[0]*p[4]])
         plt.show()
 print "10"
-interactive_window(cg,pos=cpos, geometry=(1000,1000),key_press_callback=callback,display_props = [numprop, avposprop,selfloopprop,recurrenceprop],display_props_size=14,vertex_size=15,edge_pen_width=2,self_loops=True)
+interactive_window(cg,pos=cpos, geometry=(1000,1000),key_press_callback=callback,display_props = [cg.vp["avpos"],cg.vp["num"], cg.vp["numloops"],cg.vp["rec"]],display_props_size=14,vertex_size=15,edge_pen_width=2)
 infile.close()
 end= time.time()
 print(end-start)

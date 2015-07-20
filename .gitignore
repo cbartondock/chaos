@@ -1,4 +1,5 @@
 makefile
+*.out
 *.dylib
 *.sage.py
 *.txt

@@ -1,3 +1,4 @@
+from sage.all import *
 import numpy
 import os
 import matplotlib.pylab as plt
@@ -18,42 +19,44 @@ INV = CDLL(libraries[0].strip())
 RK4 = CDLL(libraries[1].strip())
 SAM = CDLL(libraries[2].strip())
 
-'''
-Parameters
-'''
-#Choose map: (1=Standard,2=Pendulum,3=Henon,4=Saddle)
-chmap = 4
+#Parameters
+
+#Choose a map: (1=Standard,2=Pendulum,3=Henon,4=Saddle)
+chmap = 2
 
 #Topology: (1=Plane,2=Cylinder)
-top = 1
+top = 2 if chmap==2 else 1
 
-maxiter = 30
+#iteration properties
+maxiter = 50
+numper = 1
 #Choose grid size:
-grid = 50
-print "grid: "+str(grid)+", maxiter: "+str(maxiter)
+grid = 1000
 
-#Choose dimensions:
+#Region Dimensions:
+if chmap == 1:
+    ymin = 0
+    ymax = 2*numpy.pi     #Standard
+    xmin = 0
+    xmax = 2*numpy.pi
+elif chmap == 2:
+    ymin = -2
+    ymax = 4        #Pendulum
+    xmin = 0
+    xmax = 2*numpy.pi
 
-ymin=-2.5
-ymax=2.5      #Henon
-xmin=-2.5
-xmax=2.5
-
-"""
-ymin = -2
-ymax = 4        #Pendulum
-xmin = 0
-xmax = 2*numpy.pi
-"""
-"""
-ymin = 0
-ymax = 2*numpy.pi     #Standard
-xmin = 0
-xmax = 2*numpy.pi
-"""
+else:
+    ymin=-2.
+    ymax=2.      #Henon, Saddle
+    xmin=-2.
+    xmax=2.
 
 deltax = (xmax-xmin)/grid
 deltay = (ymax-ymin)/grid
+
+#Property Summary
+mapnames = ["Standard","Pendulum","Henon","Saddle"]
+print("Running on {0} with box [({1},{2}),({3},{4})] with grid {5}, number per iterate {6}, and max iterates {7}".format(mapnames[chmap-1],xmin,ymin,xmax,ymax,grid,numper,maxiter))
 
 params = numpy.savetxt("outputs/parameters.txt", numpy.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
 
@@ -64,8 +67,10 @@ Algorithm
 m = matrix.ones(grid,grid)
 m = m.numpy('uint8')
 print "started invariant4.c"
+
 INV.calc_invariant(c_int32(maxiter),
        c_int32(maxiter),
+       c_int32(numper),
        c_int32(grid),
        c_int32(grid),
        c_int32(chmap),
@@ -101,10 +106,9 @@ free_matrix = SAM.free_matrix
 '''
 Graph
 '''
-
 if options.graph:
     sp = sam_pointer()
-    sp = initialize_matrix(c_int(grid),c_int(chmap),c_int(top),c_double(xmin),c_double(ymin),c_double(deltax),c_double(deltay),m.ctypes.data_as(c_void_p))
+    sp = initialize_matrix(c_int(grid),c_int(numper),c_int(chmap),c_int(top),c_double(xmin),c_double(ymin),c_double(deltax),c_double(deltay),m.ctypes.data_as(c_void_p))
     nodes = {}
     current = adj_pointer()
     for i in range(0, sp.contents.domnumber):
@@ -112,7 +116,7 @@ if options.graph:
         image=[]
         while current.contents.imageindex!=-1:
             image.append(current.contents.imageindex)
-            current = current.contents.next
+            current = current.contents.next 
         nodes[current.contents.domindex] = image
     outfile = open("outputs/save.p","wb")
     pickle.dump(nodes, outfile)

@@ -21,7 +21,7 @@ double weight(double t) {
 void convergence(int rows, int cols, int time, double leastx, double leasty,
         double deltax, double deltay, int fnum, unsigned char (*m)[cols]) {
 
-    int i, j, t, v, u;
+    int i, j, t, v;
 
     double wsum=0;
     for(t=0; t<time; t++) {
@@ -33,10 +33,7 @@ void convergence(int rows, int cols, int time, double leastx, double leasty,
     double diff[6] = {0,};
     double diff_mag;
     unsigned char numzeros;
-    double rate;
-    double p[2];
     double evecs[6];
-    double first2[6] = {0,};
     double wvar;
     for(i=0; i < rows; i++) {
         printf("i is: %u\n", i);
@@ -60,11 +57,6 @@ void convergence(int rows, int cols, int time, double leastx, double leasty,
 		    }*/
                     xn = smod(x+y,6.283185307);
                     yn = smod(1.4*sin(x+y)+y,6.283185307);
-                    //p[0]=x;
-                    //p[1]=y;
-                    //rk4(p,2*M_PI,.2);
-                    //xn = smod(p[0],2*M_PI);
-                    //yn = p[1];
                     x = xn;
                     y = yn;
                 }
