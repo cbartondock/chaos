@@ -11,17 +11,23 @@ liblist = libfile.readlines()
 QUAS=CDLL(liblist[4].strip())
 libfile.close()
 
-grid=500
+'''
+Parameters
+'''
+grid=500           # Grid size nxn
+fnum = 1           # Number of functions
+xmin=0.            #
+ymin=0.            # Dimensions
+xmax=2*np.pi       #
+ymax=2*np.pi       #
+totaltime = 1000   # Map iterates
+
 m = np.ones((grid,grid))#np.loadtxt("outputs/imatrix.txt")
 m = m.astype('uint8')
 #p = np.loadtxt("outputs/parameters.txt")
-xmin=0.
-ymin=0.
-xmax=2*np.pi;
-ymax=2*np.pi
+
 deltax=(xmax-xmin)/grid
 deltay=(ymax-ymin)/grid
-totaltime = 100000
 
 QUAS.convergence(c_int32(grid),
                  c_int32(grid),
@@ -30,6 +36,7 @@ QUAS.convergence(c_int32(grid),
                  c_double(ymin),
                  c_double(deltax),
                  c_double(deltay),
+		 c_int32(fnum),
                  m.ctypes.data_as(c_void_p))
 w = np.vectorize(lambda x: x)(m)
 print(m)
