@@ -49,15 +49,12 @@ if graph.num_vertices()<150:
     graph_draw(graph, posg,output ="outputs/graph.ps")
     interactive_window(graph,posg, geometry=(1000,1000),display_props=[graph.vp["matpos"],graph.vp["selfloop"]],display_props_size=16,vertex_size=15,edge_pen_width=2)
 print "6"
-
-
 for vert in graph.vertices():
-    for neighbor in [out_edge.target() for out_edge in vert.out_edges()]:
-        if (graph.edge(neighbor, vert) is None and
+    for neighbor in vert.out_neighbours():
+        if (graph.edge(neighbor,vert) is None and
             abs(graph.vp["matpos"][neighbor][0]-graph.vp["matpos"][vert][0]) <= 1 and
                 abs(graph.vp["matpos"][neighbor][1]-graph.vp["matpos"][vert][1]) <= 1):
                     graph.add_edge(neighbor, vert)
-
 
 print "7"
 components = label_components(graph)[0]
@@ -70,12 +67,13 @@ cg, community, vcount, ecount, va, ea = condensation_graph(graph, components, av
 cg = transitive_closure(cg)
 
 cg.vertex_properties["num"] = va[0]
+cg.vertex_properties["matpos_sum"] = va[1];
 cg.vertex_properties["numloops"] = va[2]
 cg.vertex_properties["avpos"] = cg.new_vertex_property("string")
 cg.vertex_properties["rec"]=cg.new_vertex_property("bool")
 
 for cv in cg.vertices():
-    cg.vp["avpos"][cv] = str([float(coord)/float(cg.vp["num"][cv]*grid) for coord in va[1][cv]])
+    cg.vp["avpos"][cv] = str([float(coord)/float(cg.vp["num"][cv]*grid) for coord in cg.vp["matpos_sum"][cv]])
     if cg.vp["numloops"][cv] + cg.vp["num"][cv] > 1:
         cg.vp["rec"][cv] = 1
     else:
@@ -89,6 +87,15 @@ print "8"
 print(cg.vp["rec"])
 cg.set_vertex_filter(cg.vp["rec"])
 cg.purge_vertices()
+"""
+for vert in cg.vertices():
+    for neighbor in vert.out_neighbours():
+        print("num"+str(cg.vp["num"][neighbor]))
+        if (cg.edge(neighbor,vert) is None and cg.vp["num"][neighbor] == 1 and
+            abs(cg.vp["matpos_sum"][neighbor][0]-cg.vp["matpos_sum"][vert][0]) <= 1 and
+                abs(cg.vp["matpos_sum"][neighbor][1]-cg.vp["matpos_sum"][vert][1]) <= 1):
+                    cg.add_edge(neighbor, vert)
+"""
 print "9"
 cpos = sfdp_layout(cg)
 graph_draw(cg,pos=cpos,output="outputs/condensation_graph.ps",geometry=[1000,1000])

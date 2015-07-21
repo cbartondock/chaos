@@ -132,7 +132,7 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
                 }
                 if(chmap==2){
                     memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                    rk4(newcorners[c],2*M_PI,.01);
+                    rk4(newcorners[c],2*M_PI,.2);
                 }
                 if(chmap==3){
                     newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
@@ -162,10 +162,10 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
             ivmaxraw = (max(edge[0][1],edge[1][1])-leasty)/deltay;
             jvminraw = (min(edge[0][0],edge[1][0])-leastx)/deltax;
             jvmaxraw = (max(edge[0][0],edge[1][0])-leastx)/deltax;
-            ivmin = ceil(ivminraw-epsilon);
-            ivmax = floor(ivmaxraw+epsilon);
-            jvmin = ceil(jvminraw-epsilon);
-            jvmax = floor(jvmaxraw+epsilon);
+            ivmin = ceil(ivminraw);
+            ivmax = floor(ivmaxraw);
+            jvmin = ceil(jvminraw);
+            jvmax = floor(jvmaxraw);
             if(jvmaxraw!=jvminraw) {
                 for(int jv=jvmin; jv<=jvmax; jv++) {
                     tjv = (leastx+jv*deltax-edge[0][0])/(diff[0]);

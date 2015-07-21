@@ -14,8 +14,8 @@ libfile.close()
 '''
 Parameters
 '''
-grid=500           # Grid size nxn
-fnum = 1           # Number of functions
+grid=200           # Grid size nxn
+fnum = 6           # Number of functions
 xmin=0.            #
 ymin=0.            # Dimensions
 xmax=2*np.pi       #

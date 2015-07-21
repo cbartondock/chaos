@@ -25,13 +25,13 @@ SAM = CDLL(libraries[2].strip())
 chmap = 2
 
 #Topology: (1=Plane,2=Cylinder)
-top = 2 if chmap==2 else 1
+top = 2 if chmap==4 else 1
 
 #iteration properties
 maxiter = 30
 numper = 1
 #Choose grid size:
-grid = 600
+grid = 1000
 
 #Region Dimensions:
 if chmap == 1:
