@@ -14,13 +14,13 @@ libfile.close()
 '''
 Parameters
 '''
-grid=200           # Grid size nxn
-fnum = 6           # Number of functions
+grid=1000           # Grid size nxn
+fnum = 3           # Number of functions
 xmin=0.            #
 ymin=0.            # Dimensions
 xmax=2*np.pi       #
 ymax=2*np.pi       #
-totaltime = 1000   # Map iterates
+totaltime = 10000   # Map iterates
 
 m = np.ones((grid,grid))#np.loadtxt("outputs/imatrix.txt")
 m = m.astype('uint8')

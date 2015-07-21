@@ -22,10 +22,10 @@ SAM = CDLL(libraries[2].strip())
 #Parameters
 
 #Choose a map: (1=Standard,2=Pendulum,3=Henon,4=Saddle)
-chmap = 2
+chmap = 3
 
 #Topology: (1=Plane,2=Cylinder)
-top = 2 if chmap==4 else 1
+top = 2 if chmap==2 else 1
 
 #iteration properties
 maxiter = 30

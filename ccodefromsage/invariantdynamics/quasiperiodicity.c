@@ -5,8 +5,8 @@
 #include "../rk4/rk4.c"
 #include "../usefulfunctions/functions.c"
 //2D phase space functions in L1
-double f1(double x, double y) { return sin(x)*sin(x); }
-double f2(double x, double y) { return cos(x)*cos(x); }
+double f1(double x, double y) { return sin(x);}
+double f2(double x, double y) { return cos(x)*cos(y); }
 double f3(double x, double y) { return sin(4*M_PI*x)*sin(4*M_PI*y); }
 double f4(double x, double y) { return sin(6*M_PI*x)*sin(4*M_PI*y); }
 double f5(double x, double y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
