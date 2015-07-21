@@ -110,7 +110,7 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
     double edges[4][2][2];
     double edge[2][2];
     double diff[2];
-    double epsilon=.001;
+    double epsilon=.0001;
     double tiv,tjv, ceptxraw, ceptyraw;
     double ivmaxraw,ivminraw,jvmaxraw,jvminraw;
     int ivmax,ivmin,jvmax,jvmin, jvmax2,ivmax2;
@@ -173,7 +173,7 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
                     ceptxraw = (edge[0][0] + diff[0]*tjv-leastx)/deltax;
                     ceptyraw = (edge[0][1] + diff[1]*tjv-leasty)/deltay;
                     ceptx = round(ceptxraw);
-                    cepty = floor(ceptyraw);
+                    cepty = floor(ceptyraw+epsilon);
                     ceptx2= ceptx-1;
                     cepty2= cepty-1;
                     if(top==2){//cylindrical topology
@@ -190,7 +190,7 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
                         add_edge(domindex,imageindex,adjmatrix);
                     }
 
-                    if(smod(ceptyraw,1)<epsilon || smod(ceptyraw,1)>1-epsilon) {
+                    if(smod(ceptyraw,1)<=epsilon || smod(ceptyraw,1)>=1-epsilon) {
                         imageindex = ceptx + grid*cepty2;
 
                         if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
@@ -211,7 +211,7 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
                     ceptxraw = (edge[0][0] + diff[0]*tiv-leastx)/deltax;
                     ceptyraw = (edge[0][1] + diff[1]*tiv-leasty)/deltay;
                     cepty = round(ceptyraw);
-                    ceptx = floor(ceptxraw);
+                    ceptx = floor(ceptxraw+epsilon);
                     ceptx2= ceptx-1;
                     cepty2= cepty-1;
                     if(top==2){ //cylindrical topology
@@ -226,7 +226,7 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
                     if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
                         add_edge(domindex,imageindex,adjmatrix);
                     }
-                    if(smod(ceptxraw,1)<epsilon || smod(ceptxraw,1)>1-epsilon) {
+                    if(smod(ceptxraw,1)<=epsilon || smod(ceptxraw,1)>=1-epsilon) {
                         imageindex = ceptx2 + grid*cepty;
                         if(exists_vertex(imageindex,adjmatrix) && !exists_edge(domindex,imageindex,adjmatrix)) {
                             add_edge(domindex,imageindex,adjmatrix);

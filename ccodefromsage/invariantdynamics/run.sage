@@ -28,10 +28,10 @@ chmap = 2
 top = 2 if chmap==2 else 1
 
 #iteration properties
-maxiter = 50
+maxiter = 30
 numper = 1
 #Choose grid size:
-grid = 1000
+grid = 600
 
 #Region Dimensions:
 if chmap == 1:

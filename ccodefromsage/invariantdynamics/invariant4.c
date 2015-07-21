@@ -36,7 +36,7 @@ void calc_invariant(
     double edges[4][2][2];
     double edge[2][2];
     double diff[2];
-    double epsilon=0.001;
+    double epsilon=0.0001;
     double tiv, tjv, ceptxraw, ceptyraw;
     double jvminraw,jvmaxraw,ivminraw,ivmaxraw;
     int jvmin,jvmax,ivmin,ivmax,ivmax2,jvmax2;
@@ -73,8 +73,8 @@ void calc_invariant(
                             newcorners[c][1]=corners[c][0];
                         }
                         if(chmap==4){
-                            newcorners[c][0] = 2*corners[c][0];
-                            newcorners[c][1] = .5*corners[c][1];
+                            newcorners[c][0] = corners[c][0]/2.;
+                            newcorners[c][1] = corners[c][1]*2.;
                         }
                         corners[c][0] = newcorners[c][0];
                         corners[c][1] = newcorners[c][1];
@@ -108,7 +108,7 @@ void calc_invariant(
                             ceptxraw = (edge[0][0] + diff[0]*tjv-leastx)/deltax;
                             ceptyraw = (edge[0][1] + diff[1]*tjv-leasty)/deltay;
                             ceptx = round(ceptxraw);
-                            cepty = floor(ceptyraw);
+                            cepty = floor(ceptyraw+epsilon);
                             ceptx2= ceptx-1;
                             cepty2= cepty-1;
                             if(top==2){//cylindrical topology
@@ -139,7 +139,7 @@ void calc_invariant(
                             ceptxraw = (edge[0][0] + diff[0]*tiv-leastx)/deltax;
                             ceptyraw = (edge[0][1] + diff[1]*tiv-leasty)/deltay;
                             cepty = round(ceptyraw);
-                            ceptx = floor(ceptxraw);
+                            ceptx = floor(ceptxraw+epsilon);
                             ceptx2= ceptx-1;
                             cepty2= cepty-1;
                             if(top==2){ //cylindrical topology
@@ -250,8 +250,8 @@ void calc_invariant(
                             newcorners[c][1]=corners[c][0];
                         }
                         if(chmap==4){
-                            newcorners[c][0] = 2*corners[c][0];
-                            newcorners[c][1] = .5*corners[c][1];
+                            newcorners[c][0] = corners[c][0]/2.;
+                            newcorners[c][1] = corners[c][1]*2.;
                         }
                         corners[c][0] = newcorners[c][0];
                         corners[c][1] = newcorners[c][1];
@@ -286,7 +286,7 @@ void calc_invariant(
                             ceptxraw = (edge[0][0] + diff[0]*tjv-leastx)/deltax;
                             ceptyraw = (edge[0][1] + diff[1]*tjv-leasty)/deltay;
                             ceptx = round(ceptxraw);
-                            cepty = floor(ceptyraw);
+                            cepty = floor(ceptyraw+epsilon);
                             ceptx2= ceptx-1;
                             cepty2= cepty-1;
                             if(top==2){//cylindrical topology
@@ -301,7 +301,7 @@ void calc_invariant(
 
                             }
 
-                            if(smod(ceptyraw,1)==0) {
+                            if(smod(ceptyraw,1) <=epsilon || smod(ceptyraw,1)>=1-epsilon) {
                                 if(cepty2>=0 && cepty2<rows && ceptx >=0 && ceptx<cols && 0xf&m[cepty2][ceptx]) {
                                     m[i][j]=(1<<4)|m[i][j];
 
@@ -320,7 +320,7 @@ void calc_invariant(
                             ceptxraw = (edge[0][0] + diff[0]*tiv-leastx)/deltax;
                             ceptyraw = (edge[0][1] + diff[1]*tiv-leasty)/deltay;
                             cepty = round(ceptyraw);
-                            ceptx = floor(ceptxraw);
+                            ceptx = floor(ceptxraw+epsilon);
                             ceptx2= ceptx-1;
                             cepty2= cepty-1;
                             if(top==2){ //cylindrical topology
@@ -335,7 +335,7 @@ void calc_invariant(
                                 m[i][j]=(1<<4)|m[i][j];
 
                             }
-                            if(smod(ceptxraw,1)==0) {
+                            if(smod(ceptxraw,1)<=epsilon || smod(ceptxraw,1)>=1-epsilon) {
                                 if(cepty>=0 && cepty<rows && ceptx2>=0 && ceptx2<cols && 0xf&m[cepty][ceptx2]) {
                                     m[i][j]=(1<<4)|m[i][j];
 
@@ -344,7 +344,6 @@ void calc_invariant(
                                     m[i][j]=(1<<4)|m[i][j];
 
                                 }
-
                             }
                         }
                     }

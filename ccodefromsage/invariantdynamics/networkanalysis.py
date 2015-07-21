@@ -23,13 +23,13 @@ graph.vertex_properties["seqpos"] = graph.new_vertex_property("int")
 graph.vertex_properties["matpos"] = graph.new_vertex_property("vector<int>")
 graph.vertex_properties["summable"] = graph.new_vertex_property("int")
 graph.vertex_properties["selfloop"] = graph.new_vertex_property("int")
-print "4"
+print "3"
 for i in range(0,graph.num_vertices()):
     graph.vp["summable"][graph.vertex(i)] = 1
     graph.vp["seqpos"][graph.vertex(i)] = keys[i]
     graph.vp["matpos"][graph.vertex(i)] = list((keys[i]/grid, keys[i]%grid))
 
-print "5"
+print "4"
 
 access_dict={}
 for i in range(0,len(keys)):
@@ -43,11 +43,22 @@ for v in graph.vertices():
         graph.vp["selfloop"][v] = 1
         print "found self loop!"
 
-print "6"
+print "5"
 if graph.num_vertices()<150:
     posg = sfdp_layout(graph)
     graph_draw(graph, posg,output ="outputs/graph.ps")
     interactive_window(graph,posg, geometry=(1000,1000),display_props=[graph.vp["matpos"],graph.vp["selfloop"]],display_props_size=16,vertex_size=15,edge_pen_width=2)
+print "6"
+
+
+for vert in graph.vertices():
+    for neighbor in [out_edge.target() for out_edge in vert.out_edges()]:
+        if (graph.edge(neighbor, vert) is None and
+            abs(graph.vp["matpos"][neighbor][0]-graph.vp["matpos"][vert][0]) <= 1 and
+                abs(graph.vp["matpos"][neighbor][1]-graph.vp["matpos"][vert][1]) <= 1):
+                    graph.add_edge(neighbor, vert)
+
+
 print "7"
 components = label_components(graph)[0]
 
