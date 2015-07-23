@@ -1,5 +1,5 @@
 from sage.all import *
-import numpy
+import numpy as np
 import os
 import matplotlib.pylab as plt
 import matplotlib.cm as cm
@@ -22,7 +22,7 @@ SAM = CDLL(libraries[2].strip())
 #Parameters
 
 #Choose a map: (1=Standard,2=Pendulum,3=Henon,4=Saddle)
-chmap = 3
+chmap = 2
 
 #Topology: (1=Plane,2=Cylinder)
 top = 2 if chmap==2 else 1
@@ -31,19 +31,19 @@ top = 2 if chmap==2 else 1
 maxiter = 30
 numper = 1
 #Choose grid size:
-grid = 1000
+grid = 80
 
 #Region Dimensions:
 if chmap == 1:
     ymin = 0
-    ymax = 2*numpy.pi     #Standard
+    ymax = 2*np.pi     #Standard
     xmin = 0
-    xmax = 2*numpy.pi
+    xmax = 2*np.pi
 elif chmap == 2:
     ymin = -2
     ymax = 4        #Pendulum
     xmin = 0
-    xmax = 2*numpy.pi
+    xmax = 2*np.pi
 
 else:
     ymin=-2.
@@ -58,8 +58,7 @@ deltay = (ymax-ymin)/grid
 mapnames = ["Standard","Pendulum","Henon","Saddle"]
 print("Running on {0} with box [({1},{2}),({3},{4})] with grid {5}, number per iterate {6}, and max iterates {7}".format(mapnames[chmap-1],xmin,ymin,xmax,ymax,grid,numper,maxiter))
 
-params = numpy.savetxt("outputs/parameters.txt", numpy.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
-
+params = np.savetxt("outputs/parameters.txt", np.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
 '''
 Algorithm
 '''
@@ -81,10 +80,10 @@ INV.calc_invariant(c_int32(maxiter),
        c_double(deltay),
 	   m.ctypes.data_as(c_void_p))
 print "finished invariant4.c"
-w = numpy.vectorize(lambda x: x)(m)
+w = np.vectorize(lambda x: x)(m)
 plt.imshow(w,vmin=0, vmax=1,interpolation='none' if grid > 200 else 'nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
 plt.savefig("outputs/invariance_result.ps")
-numpy.savetxt("outputs/imatrix.txt",w)
+np.savetxt("outputs/imatrix.txt",w)
 print("invariant saved")
 
 plt.clf()

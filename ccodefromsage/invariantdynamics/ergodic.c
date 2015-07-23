@@ -23,7 +23,6 @@ void partition(int rows, int cols, int time, double leastx, double leasty,
 
 
     double x,y, xn, yn;
-    double p[2];
     double evecs[rows][cols][6];
     memset(evecs, 0, sizeof(double)*rows*cols*6);
     for(i=0; i < rows; i++) {
@@ -38,11 +37,6 @@ void partition(int rows, int cols, int time, double leastx, double leasty,
                     }
                     xn = smod(x+y,6.283185307);
                     yn = smod(sin(x+y)+y,6.283185307);
-                    //p[0]=x;
-                    //p[1]=y;
-                    //rk4(p,2*M_PI,.2);
-                    //xn = smod(p[0],2*M_PI);
-                    //yn = p[1];
                     x = xn;
                     y = yn;
                 }

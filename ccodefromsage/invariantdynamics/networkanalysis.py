@@ -86,7 +86,7 @@ print(cg.vp["rec"])
 print "8"
 print(cg.vp["rec"])
 cg.set_vertex_filter(cg.vp["rec"])
-cg.purge_vertices()
+cg.purge_vertices(in_place=True)
 """
 for vert in cg.vertices():
     for neighbor in vert.out_neighbours():

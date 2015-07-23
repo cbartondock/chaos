@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pylab as plt
 import matplotlib.cm as cm
+import cPickle as pickle;
 from ctypes import *
 import time
 
@@ -14,20 +15,23 @@ libfile.close()
 '''
 Parameters
 '''
-grid=1000           # Grid size nxn
+grid=500           # Grid size nxn
 fnum = 3           # Number of functions
 xmin=0.            #
 ymin=0.            # Dimensions
 xmax=2*np.pi       #
 ymax=2*np.pi       #
-totaltime = 10000   # Map iterates
+totaltime = 1000   # Map iterates
+deltax=(xmax-xmin)/grid
+deltay=(ymax-ymin)/grid
+
+np.savetxt("outputs/qparameters.txt", np.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
 
 m = np.ones((grid,grid))#np.loadtxt("outputs/imatrix.txt")
 m = m.astype('uint8')
 #p = np.loadtxt("outputs/parameters.txt")
 
-deltax=(xmax-xmin)/grid
-deltay=(ymax-ymin)/grid
+
 
 QUAS.convergence(c_int32(grid),
                  c_int32(grid),
@@ -46,5 +50,9 @@ plt.savefig("outputs/convergence_result.ps")
 plt.clf()
 plt.hist(m.flatten(), 50, histtype='stepfilled')
 plt.savefig("outputs/convergence_histogram.ps")
+
+outfile = open("outputs/conv_matrix.p", "wb")
+pickle.dump(m,outfile)
+outfile.close()
 end=time.time()
 print(end-start)
