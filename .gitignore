@@ -1,6 +1,7 @@
 *.out
 *.dylib
 invariantdynamics/outputs/*.txt
+.gitignore
 *.ps
 *.png
 *.pdf
