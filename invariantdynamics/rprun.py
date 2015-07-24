@@ -22,8 +22,11 @@ windowwidth=1000;
 epsilon=.5;
 
 #Initial Conditions
-ix = 5.14;
-iy=2.14;
+#(6.187998, 4.187182) are sticky
+#(3.14, 1.14) are quasiperiodic
+#(5.14,2.14) are chaotic
+ix = 6.187998;
+iy = 4.187182;
 
 m = np.zeros((windowwidth,windowwidth),dtype="uint32")
 xlist = np.zeros(windowwidth, dtype="float")
@@ -45,6 +48,9 @@ if windowwidth <= 50:
 #Recurrence Plot
 plt.imshow(m,vmin=0,interpolation='nearest',cmap=cm.Reds,extent=[0,windowwidth,0,windowwidth])
 plt.colorbar()
+plt.xlabel("Time")
+plt.ylabel("Time")
+plt.title("Recurrence Plot for a Quasiperiodic Trajectory")
 plt.savefig("outputs/rp_result.ps")
 plt.clf()
 

@@ -15,7 +15,7 @@ libfile.close()
 #Parameters
 
 #Choose a Grid Size
-grid=500
+grid=1000
 
 #Number of Functions Converging
 fnum = 1
@@ -53,15 +53,21 @@ print "finished quasiperiodicity.c"
 w = np.vectorize(lambda x: x)(m)
 print(m)
 plt.imshow(w,vmin=0,interpolation='nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
-plt.colorbar()
+cbar = plt.colorbar()
+cbar.set_label("Number of Zeros in Difference")
+plt.xlabel("x")
+plt.ylabel("y")
 plt.savefig("outputs/convergence_result.ps")
 plt.clf()
 
 #Plotting Convergence Rate Histogram
 entries = m.flatten()
 plt.hist(entries,np.arange(min(entries),max(entries),1)-1.5)
+plt.title("Convergence Rates Histogram")
+plt.xlabel("Number of Zeros in Difference")
+plt.ylabel("N")
 plt.savefig("outputs/convergence_histogram.ps")
-
+plt.clf()
 #Saving Convergence Matrix
 outfile = open("outputs/conv_matrix.p", "wb")
 pickle.dump(m,outfile)

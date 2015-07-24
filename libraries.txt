@@ -1,0 +1,7 @@
+../invariantdynamics/dylibs/invariant4.dylib
+../rk4/rk4.dylib
+../sparse_matrix_table/smtable.dylib
+../invariantdynamics/dylibs/birkhoff_partition.dylib
+../invariantdynamics/dylibs/quasiperiodicity.dylib
+../invariantdynamics/dylibs/sticky.dylib
+../figurefactory/factory.dylib

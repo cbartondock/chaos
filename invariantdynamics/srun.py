@@ -40,8 +40,12 @@ print rrs
 
 print "Plot Recurrence Rate"
 plt.plot(rrs)
+threshold = plt.axhline(y=.05,color='r',ls='dashed', label = 'Stickiness Threshold')
+plt.title("Recurrence Rate along Chaotic Trajectory")
 plt.ylabel("Recurrence Rate")
 plt.xlabel("Window")
+plt.ylim((0,.1))
+plt.legend(handles=[threshold])
 plt.savefig("outputs/rr_result.ps")
 plt.clf()
 

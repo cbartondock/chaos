@@ -1,7 +1,6 @@
 *.out
 *.dylib
-*.sage.py
-*.txt
+invariantdynamics/outputs/*.txt
 *.ps
 *.png
 *.pdf

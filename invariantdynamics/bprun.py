@@ -12,7 +12,7 @@ libraries = open('../libraries.txt').readlines()
 ERG = CDLL(libraries[3].strip())
 
 #Parameters (running on the Standard Map)
-grid=150
+grid=410
 
 #Region Parameters
 xmin=0.
@@ -27,7 +27,7 @@ deltay=(ymax-ymin)/grid
 kgrid = 25;
 
 #Iterations
-totaltime = 1000;
+totaltime = 10000;
 
 m = np.ones((grid,grid),dtype="uint64")
 
@@ -46,6 +46,9 @@ print "finished birkhoff_partition.c"
 #Plotting
 w = np.vectorize(lambda x: x)(m)
 imgplot = plt.imshow(w,interpolation='none' if grid > 200 else 'nearest',cmap=cm.flag,extent=[xmin,xmin+grid*deltax,ymin,ymin+grid*deltay])
+plt.title("Invariant Curves of the Standard Map")
+plt.xlabel("x")
+plt.ylabel("y")
 plt.savefig("outputs/birkhoff_result.ps")
 plt.clf()
 end = time.time()
