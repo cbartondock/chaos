@@ -1,4 +1,3 @@
-makefile
 *.out
 *.dylib
 *.sage.py
