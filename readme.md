@@ -18,7 +18,7 @@ make -f make_all
 ```
 
 ##Tools
-For the sake of speed, each python tool "xxrun.py" uses one or more compiled C libraries through Python's ctypes module. Included are the following tools:
+For the sake of speed, each python tool (xx)run.py uses one or more compiled C libraries through Python's ctypes module. Included are the following tools:
  - A C Program to run 4th Order Runge Kutta in 2 Dimensions (rk4/rk4.c)
  - A C implementation of a Sparse Matrix for efficient graph storage (sparse\_matrix\_table/smtable.c)
  - A C Program with a corrected real number modulus (usefulfunctions/functions.c)
@@ -40,12 +40,12 @@ The parameters of each python program are explained in their comments. If the us
  - rprun.py calls stick.c
  - srun.py calls sticky.c
  - rk4.c contains the differential equation governing any flow
+
 To use one of the python programs, simply alter it's parameters as needs be and type
 ```
 python xxrun.py
 ```
-The two analysis programs don't have easily editable parameters, 
-but are well commented if the user wishes to modify them. 
+The two analysis programs don't have easily editable parameters, but are well commented if the user wishes to modify them. 
 
 irun.py can also produce a graph file ('outputs/graph_save.p') if the user runs
 ```
@@ -56,5 +56,15 @@ Similarly, sticky\_analysis.py requires the outputs of qrun.py and srun.py (run 
 
 Finally, the program frun.py requires a directory named for the map being studied, 
 and for the map to be specified in factory.c.
+
+The outputs of the Python Programs are as follows:
+ - frun.py => (map)diffs/diff\_(n).png and (map)figs/result\_(n).png
+ - irun.py => outputs/invariant\_result.ps and outputs/imatrix.txt and outputs/graph_save.p
+ - qrun.py => outputs/convergence\_result.ps and outputs/convergence\_histogram.ps and outputs/conv\_matrix.p
+ - bprun.py => outputs/birkhoff_result.ps
+ - rprun.py => outputs/rp_result.ps
+ - srun.py => outputs/rr_result.ps and outputs/stickypoints.txt
+ - morse\_analyis.py => outputs/graph.ps and outputs/condensation\_graph.ps
+ - sticky\_analysis.py => outputs/sticky\_result.ps
 
 ##Examples Website
