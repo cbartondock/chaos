@@ -11,7 +11,7 @@ double ddpx(double x, double y, double t) {
     return y;
 }
 double ddpy(double x, double y, double t) {
-    return 1.8*cos(t)-sin(x)-.2*y;
+    return 2.5*cos(t)-sin(x)-.2*y;
 }
 
 

@@ -50,7 +50,7 @@ plt.imshow(m,vmin=0,interpolation='nearest',cmap=cm.Reds,extent=[0,windowwidth,0
 plt.colorbar()
 plt.xlabel("Time")
 plt.ylabel("Time")
-plt.title("Recurrence Plot for a Quasiperiodic Trajectory")
+plt.title("Recurrence Plot for a Sticky Trajectory")
 plt.savefig("outputs/rp_result.ps")
 plt.clf()
 

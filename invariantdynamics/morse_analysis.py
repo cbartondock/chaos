@@ -85,16 +85,8 @@ print(cg.vp["rec"])
 print "8"
 print(cg.vp["rec"])
 cg.set_vertex_filter(cg.vp["rec"])
-cg.purge_vertices(in_place=True)
-"""
-for vert in cg.vertices():
-    for neighbor in vert.out_neighbours():
-        print("num"+str(cg.vp["num"][neighbor]))
-        if (cg.edge(neighbor,vert) is None and cg.vp["num"][neighbor] == 1 and
-            abs(cg.vp["matpos_sum"][neighbor][0]-cg.vp["matpos_sum"][vert][0]) <= 1 and
-                abs(cg.vp["matpos_sum"][neighbor][1]-cg.vp["matpos_sum"][vert][1]) <= 1):
-                    cg.add_edge(neighbor, vert)
-"""
+cg.purge_vertices(in_place=False)
+
 print "9"
 cpos = sfdp_layout(cg)
 graph_draw(cg,pos=cpos,output="outputs/condensation_graph.ps",geometry=[1000,1000])

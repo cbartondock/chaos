@@ -29,7 +29,7 @@ maxiter = 30
 numper = 1
 
 #Choose Grid size:
-grid = 80
+grid = 1000
 
 #Region Dimensions (make sure these are floats):
 if chmap == 1:
@@ -79,6 +79,13 @@ print "finished invariant4.c"
 #Plotting
 w = np.vectorize(lambda x: x)(m)
 plt.imshow(w,vmin=0, vmax=1,interpolation='none' if grid > 200 else 'nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
+plt.title("Invariant Set for the " + mapnames[chmap-1] + " Map")
+if top == 1:
+    plt.xlabel("x")
+    plt.ylabel("y")
+elif top==2:
+    plt.xlabel("theta")
+    plt.ylabel("omega")
 plt.savefig("outputs/invariance_result.ps")
 plt.clf()
 
