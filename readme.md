@@ -39,6 +39,7 @@ The parameters of each python program are explained in their comments. If the us
  - qrun.py calls quasiperiodicity.c
  - rprun.py calls stick.c
  - srun.py calls sticky.c
+ - rk4.c contains the differential equation governing any flow
 To use one of the python programs, simply alter it's parameters as needs be and type
 ```
 python xxrun.py
