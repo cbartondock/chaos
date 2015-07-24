@@ -1,19 +1,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <omp.h>
 #include <math.h>
-#define max( a, b ) ( ( a > b) ? a : b ) 
+#include "../sparse_matrix_table/smtable.c"
+#define max( a, b ) ( ( a > b) ? a : b )
 #define min( a, b ) ( ( a < b) ? a : b )
 
-double smod(double x, double y) {
-    int div = (int)(x/y);
-    double result = x - div*y;
-    result = (result < 0) ? result + y : result;
-    return result;
-}
-
-void forward(
+void calc_invariant(
         int maxiterf,
         int maxiterr,
         int numsamples,
@@ -26,21 +19,19 @@ void forward(
         unsigned char (*m)[cols])
 {
 
-
+//    FILE *f = fopen("test.txt", "w");
+//    FILE *f2 = fopen("test2.txt", "w");
     int i,j;
     unsigned char keep=1;
     double x, y, xn, yn;
-    double t;
+    double p[2];
     int row, col;
-    int s;
     int k=0;
     int count;
-#pragma omp parallel
     while(keep && k<maxiterf) {
         keep=0;
         k++;
         count=0;
-#pragma omp parallel for private(i,j,x,y,xn,yn,row,col)
         for(j = 0; j< cols; j++) {
             for(i = 0;i < rows; i++) {
                 if(! (m[i][j] & 0xf)) {
@@ -48,15 +39,21 @@ void forward(
                 }
                 count++;
                 for(int s = 0; s <= numsamples; s++) {
-                    for(int s2 = 0; s2 <= numsamples; s2++) {
-                        x = leastx + j*deltax + deltax * ((double)s/(double)numsamples);
-                        y = leasty + i*deltay + deltay * ((double)s2/(double)numsamples);
-                        //xn = 1*x;
+                    for(int s2 = 0; s2 <= numsamples; s2++){
+                        x = leastx + j*deltax + deltax * (double)s2/(double)numsamples;
+                        y = leasty + i*deltay + deltay * (double)s/(double)numsamples;
+                        //xn = 5*x;
                         //yn = .2*y;
-                        xn =1.4-x*x+.3*y;
-                        yn=x;
+                        //xn =1.4-x*x+.3*y;
+                        //yn=x;
                         //xn = smod(x+y,6.283185307);
                         //yn = smod(sin(x+y)+y,6.283185307);
+                        p[0]=x;
+                        p[1]=y;
+                        rk4(p,2*M_PI,.2);
+                        xn = smod(p[0],2*M_PI);
+                        yn = p[1];
+
                         //xn = .87758 * x - .479426 * y;
                         //yn = .479426 * x + .87758 * y;
                         //t= .4-6/(1+x*x+y*y);
@@ -64,9 +61,10 @@ void forward(
                         //yn=.98*(x*sin(t)+y*cos(t));
                         //xn= sqrt(x*x*x*x + y*y*y*y + 2*x*x*y*y)*x - 1/2 * x * x - 1/2 * y * y ;
                         //yn= y * sqrt(x*x*x*x + y*y*y*y + 2*x*x*y*y) + x * y;
+
                         row = (int)floor((yn-leasty)/deltay);
                         col = (int)floor((xn-leastx)/deltax);
-                        if(row >= 0 && row < rows && col >= 0 && col < cols) {
+                        if(row >= 0 && row < rows && col >= 0 && col < cols && m[row][col]&0xf) {
                             m[row][col] = (1<<4)|m[row][col];
                         }
                     }
@@ -74,7 +72,6 @@ void forward(
             }
         }
         printf("num hit forward: %u\n",count);
-#pragma omp parallel for private(i,j)
         for(j=0; j< cols; j++) {
             for(i=0; i <rows; i++) {
                 if( !keep && ((m[i][j]>>4)!=(m[i][j]&0xf))) {
@@ -102,44 +99,46 @@ void forward(
         keep=0;
         k++;
         count=0;
-#pragma omp parallel for private(i,j,x,y,xn,yn,row,col)
         for(j = 0; j< cols; j++) {
             for(i = 0;i < rows; i++) {
 
                 if(!(m[i][j] & 0xf)) {
                     continue;
                 }
-                count++;
-                for(s=0; s <=numsamples; s++) {
-                    for(int s2 = 0; s2 <= numsamples; s2++) {
-                        x = leastx + j*deltax + deltax * ((double)s/(double)numsamples);
-                        y = leasty + i*deltay + deltay * ((double)s2/(double)numsamples);
-                        //xn = 1*x;
+                count+=1;
+                for(int s=0; s <= numsamples; s++) {
+                    for(int s2=0; s2<=numsamples;s2++) {
+                        x = leastx + j*deltax + deltax * (double)s2/(double)numsamples;
+                        y = leasty + i*deltay + deltay * (double)s/(double)numsamples;
+                        //xn = 5*x;
                         //yn = .2*y;
-                        xn =1.4-x*x+.3*y;
-                        yn = x;
+                        //xn =1.4-x*x+.3*y;
+                        //yn = x;
                         //xn = smod(x+y,6.283185307);
                         //yn = smod(sin(x+y)+y,6.283185307);
                         //xn = .87758 * x - .479426 * y;
                         //yn = .479426 * x + .87758 * y;
+                        p[0]=x;
+                        p[1]=y;
+                        rk4(p,2*M_PI,.2);
+                        xn = smod(p[0],2*M_PI);
+                        yn = p[1];
                         //t= .4-6/(1+x*x+y*y);
                         //xn=1+.98*(x*cos(t)-y*sin(t));
                         //yn=.98*(x*sin(t)+y*cos(t));
                         //xn= sqrt(x*x*x*x + y*y*y*y + 2*x*x*y*y)*x - 1/2 * x * x - 1/2 * y * y ;
                         //yn= y * sqrt(x*x*x*x + y*y*y*y + 2*x*x*y*y) + x * y;
                         row = (int)floor((yn-leasty)/deltay);
-                        col = (int)floor((xn-leastx)/deltay);
+                        col = (int)floor((xn-leastx)/deltax);
 
-                        if(row>=0 && row<rows && col>=0 && col<cols && m[row][col]&0xf) {
+                        if(row>=0 && row<rows && col>=0 && col<cols  && m[row][col]&0xf) {
                             m[i][j] = (1<<4)|m[i][j];
-                            continue;
                         }
                     }
                 }
             }
         }
         printf("num hit reverse: %u\n",count);
-#pragma omp parallel for private(i,j)
         for(j=0; j< cols; j++) {
             for(i=0; i <rows; i++) {
                 if( !keep && ((m[i][j]>>4)!=(m[i][j]&0xf))) {
@@ -166,6 +165,9 @@ void forward(
 }
 
 
+
+
+
 int main(int argc, char* argv[]) {
     unsigned char m[10][10];
     for(int i=0; i < 10; ++i) {
@@ -180,24 +182,6 @@ int main(int argc, char* argv[]) {
         }
         printf("]\n");
     }
-    //forward(1,1.4,.3,1,1000,50,50,0,0,0.12566,0.12566,m);
-    forward(1,1,1000,10,10,-1,-1,.2,.2,m);
+    calc_invariant(1,1,1000,10,10,-1,-1,.2,.2,m);
 
 }
-
-
-//xn = smod(x+y,6.283185307);
-//yn = smod(sin(x+y)+y,6.283185307);
-
-//xn=param1 - x*x + param2 * y;
-//yn=x;
-
-//xn = .87758 * x - .479426 * y;
-//yn = .479426 * x + .87758 * y;
-
-//xn =10*x;
-//yn =.5*y;
-//t= .4-6/(1+x*x+y*y);
-//xn=1+.98*(x*cos(t)-y*sin(t));
-//yn=.98*(x*sin(t)+y*cos(t));
-

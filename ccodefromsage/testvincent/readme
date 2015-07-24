@@ -1,7 +1,0 @@
-run using sage command:
-
-%run -i test.sage
-
-matrix plot using command 
-
-matrix_plot(matrix, aspect_ratio="automatic")

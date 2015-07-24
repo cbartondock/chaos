@@ -2,13 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 /*
- * p specifies initial conditions
- * max marks the poincare section 
- * h is the timestep
- * epsilon is the stopping accuracy
- * Derivative(x) = f(x,y,t)
- * Derivative(y) = g(x,y,t)
- *
+ * Performs a 4th order 2-dimensional Runge Kutta, 
+ * with the initial conditions stored in p.
+ * Doesn't return a value, it modifies p.
+ * Runs from 0 to tmax with timestep h.
  */
 double ddpx(double x, double y, double t) {
     return y;

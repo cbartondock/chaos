@@ -7,7 +7,7 @@ import time
 
 start = time.time()
 
-libfile = open("libraries.txt")
+libfile = open("../libraries.txt")
 liblist = libfile.readlines()
 QUAS=CDLL(liblist[4].strip())
 libfile.close()
@@ -16,22 +16,18 @@ libfile.close()
 Parameters
 '''
 grid=500           # Grid size nxn
-fnum = 3           # Number of functions
+fnum = 1           # Number of functions
 xmin=0.            #
 ymin=0.            # Dimensions
 xmax=2*np.pi       #
 ymax=2*np.pi       #
-totaltime = 1000   # Map iterates
+totaltime = 10000   # Map iterates
 deltax=(xmax-xmin)/grid
 deltay=(ymax-ymin)/grid
 
 np.savetxt("outputs/qparameters.txt", np.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
 
-m = np.ones((grid,grid))#np.loadtxt("outputs/imatrix.txt")
-m = m.astype('uint8')
-#p = np.loadtxt("outputs/parameters.txt")
-
-
+m = np.ones((grid,grid),dtype="uint8")
 
 QUAS.convergence(c_int32(grid),
                  c_int32(grid),
@@ -48,7 +44,8 @@ plt.imshow(w,vmin=0,interpolation='nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin
 plt.colorbar()
 plt.savefig("outputs/convergence_result.ps")
 plt.clf()
-plt.hist(m.flatten(), 50, histtype='stepfilled')
+entries = m.flatten()
+plt.hist(entries,np.arange(min(entries),max(entries),1)-1.5)
 plt.savefig("outputs/convergence_histogram.ps")
 
 outfile = open("outputs/conv_matrix.p", "wb")

@@ -6,13 +6,12 @@ from ctypes import *
 import time
 
 start=time.time()
-libraries = open('libraries.txt').readlines()
+libraries = open('../libraries.txt').readlines()
 ERG = CDLL(libraries[3].strip())
 
-grid=410
-imatrix = np.ones((grid,grid))#np.loadtxt("outputs/imatrix.txt")
-imatrix = imatrix.astype(long)
-#p = np.loadtxt("outputs/parameters.txt")
+grid=150
+imatrix = np.ones((grid,grid),dtype="uint64")
+
 xmin=0.
 ymin=0.
 xmax=2*np.pi;
@@ -23,15 +22,6 @@ deltay=(ymax-ymin)/grid
 kgrid = 25;
 totaltime = 1000;
 print "started c"
-"""ERG.partition(c_int32(int(p[0])),
-        c_int32(int(p[0])),
-        c_int32(totaltime),
-        c_double(p[1]),
-        c_double(p[2]),
-        c_double(p[3]),
-        c_double(p[4]),
-        c_int32(kgrid),
-        imatrix.ctypes.data_as(c_void_p))"""
 ERG.partition(c_int32(grid),
         c_int32(grid),
         c_int32(totaltime),

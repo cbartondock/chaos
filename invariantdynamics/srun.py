@@ -7,7 +7,7 @@ import time
 
 start = time.time()
 
-libfile = open("libraries.txt")
+libfile = open("../libraries.txt")
 liblist = libfile.readlines()
 STICKY=CDLL(liblist[5].strip())
 libfile.close()
@@ -19,8 +19,7 @@ epsilon = 0.5;
 ix = 5.14;
 iy = 2.14;
 
-rrs = np.zeros(windows)
-rrs = rrs.astype('float')
+rrs = np.zeros(windows, dtype="float")
 STICKY.stickiness(c_int32(windows),
         c_double(ix),
         c_double(iy),

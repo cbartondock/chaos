@@ -116,21 +116,22 @@ void stickiness(int windows,double ix, double iy, double epsilon, double rrs[win
 
 
 int main() {
-    /*
-       int windowwidth = 10;
-       int (*m)[windowwidth] = (int(*)[windowwidth]) malloc(sizeof(int[windowwidth])*windowwidth);
-       for(int s=0; s< windowwidth; s++) {
-       for(int s2 =0; s2<windowwidth;s2++) {
-       m[s][s2]=0;
-       }
-       }
-       rp_window(windowwidth,M_PI,1.2,.5,m);*/
-    int windows = 3;
-    double rrs[windows];
-    stickiness(windows,5.14,2.14,.5,rrs);
-    printf("rr's: [");
-    for(int w=0; w<windows; w++) {
-        printf("%f, ",rrs[w]);
+    int windowwidth = 10; 
+    double xlist[windowwidth];
+    double ylist[windowwidth];
+    int (*m)[windowwidth] = (int(*)[windowwidth]) malloc(sizeof(int[windowwidth])*windowwidth);
+    for(int s=0; s< windowwidth; s++) {
+        for(int s2 =0; s2<windowwidth;s2++) {
+            m[s][s2]=0;
+        }
     }
-    printf("]\n");
+    rp_window(windowwidth,M_PI,1.2,.5,m,xlist,ylist);
+    /*int windows = 3;
+      double rrs[windows];
+      stickiness(windows,5.14,2.14,.5,rrs);
+      printf("rr's: [");
+      for(int w=0; w<windows; w++) {
+      printf("%f, ",rrs[w]);
+      }
+      printf("]\n");*/
 }

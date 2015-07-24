@@ -1,4 +1,3 @@
-from sage.all import *
 import numpy as np
 import os
 import matplotlib.pylab as plt
@@ -14,9 +13,8 @@ parser.add_option('-g','--graph', action='store_true',dest='graph')
 (options, args) = parser.parse_args()
 
 #required libraries
-libraries = open("libraries.txt").readlines()
+libraries = open("../libraries.txt").readlines()
 INV = CDLL(libraries[0].strip())
-RK4 = CDLL(libraries[1].strip())
 SAM = CDLL(libraries[2].strip())
 
 #Parameters
@@ -25,7 +23,7 @@ SAM = CDLL(libraries[2].strip())
 chmap = 2
 
 #Topology: (1=Plane,2=Cylinder)
-top = 2 if chmap==2 else 1
+top = 2 if chmap == 2 else 1
 
 #iteration properties
 maxiter = 30
@@ -35,15 +33,15 @@ grid = 80
 
 #Region Dimensions:
 if chmap == 1:
-    ymin = 0
-    ymax = 2*np.pi     #Standard
-    xmin = 0
-    xmax = 2*np.pi
+    ymin = 0.
+    ymax = 2.*np.pi     #Standard
+    xmin = 0.
+    xmax = 2.*np.pi
 elif chmap == 2:
-    ymin = -2
-    ymax = 4        #Pendulum
-    xmin = 0
-    xmax = 2*np.pi
+    ymin = -2.
+    ymax = 4.        #Pendulum
+    xmin = 0.
+    xmax = 2.*np.pi
 
 else:
     ymin=-2.
@@ -63,8 +61,7 @@ params = np.savetxt("outputs/parameters.txt", np.array([int(grid), float(xmin),f
 Algorithm
 '''
 
-m = matrix.ones(grid,grid)
-m = m.numpy('uint8')
+m = np.ones((grid,grid),dtype="uint8")
 print "started invariant4.c"
 
 INV.calc_invariant(c_int32(maxiter),
@@ -115,7 +112,7 @@ if options.graph:
         image=[]
         while current.contents.imageindex!=-1:
             image.append(current.contents.imageindex)
-            current = current.contents.next 
+            current = current.contents.next
         nodes[current.contents.domindex] = image
     outfile = open("outputs/save.p","wb")
     pickle.dump(nodes, outfile)
