@@ -46,6 +46,6 @@ print "finished birkhoff_partition.c"
 #Plotting
 w = np.vectorize(lambda x: x)(m)
 imgplot = plt.imshow(w,interpolation='none' if grid > 200 else 'nearest',cmap=cm.flag,extent=[xmin,xmin+grid*deltax,ymin,ymin+grid*deltay])
-plt.savefig("outputs/ergodic_result.ps")
+plt.savefig("outputs/birkhoff_result.ps")
 plt.clf()
 end = time.time()
