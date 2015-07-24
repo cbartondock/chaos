@@ -1,11 +1,11 @@
-##Python and C tools for studying Dynamical Systems
+#Python and C tools for studying Dynamical Systems
 
-#Required C libraries and Python modules
+##Required C libraries and Python modules
 
-#Installation
+##Installation
 
-#Tools
+##Tools
 
-#Usage
+##Usage
 
-#Website
+##Website
