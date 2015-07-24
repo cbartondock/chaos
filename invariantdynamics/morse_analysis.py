@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 from graph_tool.all import *
 import numpy as np
 import matplotlib.cm as cm
@@ -8,7 +7,7 @@ import cPickle as pickle
 
 start = time.time()
 
-infile = open("outputs/save.p","rb")
+infile = open("outputs/graph_save.p","rb")
 nodes = pickle.load(infile)
 print "1"
 keys = sorted(nodes.keys())

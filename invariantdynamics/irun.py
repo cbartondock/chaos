@@ -12,26 +12,26 @@ parser = OptionParser()
 parser.add_option('-g','--graph', action='store_true',dest='graph')
 (options, args) = parser.parse_args()
 
-#required libraries
+#Required Libraries
 libraries = open("../libraries.txt").readlines()
 INV = CDLL(libraries[0].strip())
 SAM = CDLL(libraries[2].strip())
 
-#Parameters
 
-#Choose a map: (1=Standard,2=Pendulum,3=Henon,4=Saddle)
+#Choose a Map: (1=Standard,2=Pendulum Poincare Section,3=Henon,4=Saddle)
 chmap = 2
 
 #Topology: (1=Plane,2=Cylinder)
 top = 2 if chmap == 2 else 1
 
-#iteration properties
+#Iteration Properties
 maxiter = 30
 numper = 1
-#Choose grid size:
+
+#Choose Grid size:
 grid = 80
 
-#Region Dimensions:
+#Region Dimensions (make sure these are floats):
 if chmap == 1:
     ymin = 0.
     ymax = 2.*np.pi     #Standard
@@ -57,13 +57,11 @@ mapnames = ["Standard","Pendulum","Henon","Saddle"]
 print("Running on {0} with box [({1},{2}),({3},{4})] with grid {5}, number per iterate {6}, and max iterates {7}".format(mapnames[chmap-1],xmin,ymin,xmax,ymax,grid,numper,maxiter))
 
 params = np.savetxt("outputs/parameters.txt", np.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
-'''
-Algorithm
-'''
+
 
 m = np.ones((grid,grid),dtype="uint8")
-print "started invariant4.c"
 
+print "started invariant4.c"
 INV.calc_invariant(c_int32(maxiter),
        c_int32(maxiter),
        c_int32(numper),
@@ -77,14 +75,18 @@ INV.calc_invariant(c_int32(maxiter),
        c_double(deltay),
 	   m.ctypes.data_as(c_void_p))
 print "finished invariant4.c"
+
+#Plotting
 w = np.vectorize(lambda x: x)(m)
 plt.imshow(w,vmin=0, vmax=1,interpolation='none' if grid > 200 else 'nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
 plt.savefig("outputs/invariance_result.ps")
+plt.clf()
+
+#Saving
 np.savetxt("outputs/imatrix.txt",w)
 print("invariant saved")
 
-plt.clf()
-
+#Graph Generation
 class adj_element(Structure):
     pass
 adj_element._fields_ = [("imageindex",c_int), ("domindex",c_int), ("imagenumber",c_int), ("next",POINTER(adj_element)), ("prev",POINTER(adj_element))]
@@ -99,9 +101,6 @@ initialize_matrix = SAM.initialize_sparse_matrix
 initialize_matrix.restype = sam_pointer
 free_matrix = SAM.free_matrix
 
-'''
-Graph
-'''
 if options.graph:
     sp = sam_pointer()
     sp = initialize_matrix(c_int(grid),c_int(numper),c_int(chmap),c_int(top),c_double(xmin),c_double(ymin),c_double(deltax),c_double(deltay),m.ctypes.data_as(c_void_p))
@@ -114,7 +113,7 @@ if options.graph:
             image.append(current.contents.imageindex)
             current = current.contents.next
         nodes[current.contents.domindex] = image
-    outfile = open("outputs/save.p","wb")
+    outfile = open("outputs/graph_save.p","wb")
     pickle.dump(nodes, outfile)
     outfile.close()
     free_matrix(sp)

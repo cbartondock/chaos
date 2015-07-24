@@ -24,9 +24,6 @@ void calc_invariant(
         double deltay,
         unsigned char (*m)[cols])
 {
-
-    //    FILE *f = fopen("test.txt", "w");
-    //    FILE *f2 = fopen("test2.txt", "w");
     int i,j,c;
     unsigned char keep=1;
     int k=0;
@@ -41,8 +38,6 @@ void calc_invariant(
     double jvminraw,jvmaxraw,ivminraw,ivmaxraw;
     int jvmin,jvmax,ivmin,ivmax,ivmax2,jvmax2;
     int ceptx,cepty,ceptx2,cepty2;
-    //#pragma omp parallel
-    printf("initials, deltax: %f, deltay: %f, leastx: %f, leasty: %f\n",deltax,deltay,leastx,leasty);
     while(keep && k<maxiterf) {
         keep=0;
         k++;
@@ -111,7 +106,7 @@ void calc_invariant(
                             cepty = floor(ceptyraw+epsilon);
                             ceptx2= ceptx-1;
                             cepty2= cepty-1;
-                            if(top==2){//cylindrical topology
+                            if(top==2){ //cylindrical topology
                                 ceptx = smod(ceptx,cols);
                                 ceptx2 = smod(ceptx2,cols);
                             }
@@ -192,9 +187,7 @@ void calc_invariant(
                 }
             }
         }
-        //#pragma omp parallel for private(i,j,x,y,xn,yn,row,col)
         printf("num hit forward: %u\n",count);
-        //#pragma omp parallel for private(i,j)
         for(j=0; j< cols; j++) {
             for(i=0; i <rows; i++) {
                 if( !keep && ((m[i][j]>>4)!=(m[i][j]&0xf))) {
@@ -289,7 +282,7 @@ void calc_invariant(
                             cepty = floor(ceptyraw+epsilon);
                             ceptx2= ceptx-1;
                             cepty2= cepty-1;
-                            if(top==2){//cylindrical topology
+                            if(top==2){ //cylindrical topology
                                 ceptx = smod(ceptx,cols);
                                 ceptx2 = smod(ceptx2,cols);
                             }
@@ -377,7 +370,6 @@ void calc_invariant(
             }
         }
         printf("num hit reverse: %u\n",count);
-        //#pragma omp parallel for private(i,j)
         for(j=0; j< cols; j++) {
             for(i=0; i <rows; i++) {
                 if( !keep && ((m[i][j]>>4)!=(m[i][j]&0xf))) {
@@ -422,7 +414,4 @@ int main(int argc, char* argv[]) {
         printf("]\n");
     }
     calc_invariant(10,10,1,dim,dim,4,1,-2.5,-2.5,5./dim,5./dim,m);
-
-    //calc_invariant(30,30,dim,dim,0,-2,6.28319/dim,6./dim,m);
-
 }
