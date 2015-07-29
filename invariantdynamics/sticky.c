@@ -83,6 +83,7 @@ void stickiness(int windows,double ix, double iy, double epsilon, double rrs[win
         if(rr>0.05) {
             if(!in_sticky) {
                 printf("[");
+                fprintf(points_out,";");
                 for(int i=0; i<windowwidth; i++) {
                     printf("(%f, %f), ",xlist[i],ylist[i]);
                     fprintf(points_out, "(%f, %f), ",xlist[i],ylist[i]);

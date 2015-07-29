@@ -17,7 +17,7 @@ libfile.close()
 #Parameters
 
 #Number of Windows
-windows = 400;
+windows = 1000;
 
 #Closeness Requirement
 epsilon = 0.5;
@@ -45,8 +45,8 @@ plt.title("Recurrence Rate along Chaotic Trajectory")
 plt.ylabel("Recurrence Rate")
 plt.xlabel("Window")
 plt.ylim((0,.1))
-plt.legend(handles=[threshold])
-plt.savefig("outputs/rr_result.ps")
+plt.legend(handles=[threshold],loc='upper left')
+plt.savefig("outputs/rr_result.pdf")
 plt.clf()
 
 end=time.time()

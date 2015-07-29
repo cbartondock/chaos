@@ -16,17 +16,17 @@ libfile.close()
 #Parameters
 
 #Points in Window
-windowwidth=1000;
+windowwidth=1000
 
 #Closeness Requirement
-epsilon=.5;
+epsilon=.5
 
 #Initial Conditions
 #(6.187998, 4.187182) are sticky
 #(3.14, 1.14) are quasiperiodic
 #(5.14,2.14) are chaotic
-ix = 6.187998;
-iy = 4.187182;
+ix = 5.14
+iy = 2.14
 
 m = np.zeros((windowwidth,windowwidth),dtype="uint32")
 xlist = np.zeros(windowwidth, dtype="float")
@@ -50,8 +50,8 @@ plt.imshow(m,vmin=0,interpolation='nearest',cmap=cm.Reds,extent=[0,windowwidth,0
 plt.colorbar()
 plt.xlabel("Time")
 plt.ylabel("Time")
-plt.title("Recurrence Plot for a Sticky Trajectory")
-plt.savefig("outputs/rp_result.ps")
+plt.title("Recurrence Plot for a Chaotic Sea Trajectory")
+plt.savefig("outputs/rp_result.png")
 plt.clf()
 
 end=time.time()

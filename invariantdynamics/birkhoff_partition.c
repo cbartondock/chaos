@@ -14,17 +14,34 @@ double f5(double x, double y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
 double f6(double x, double y) { return sin(8*M_PI*x)*sin(8*M_PI*y); }
 double (*fvec[6]) (double x, double y) = {f1,f2,f3,f4,f5,f6};
 
+
+double weight(double t) {
+    if(t<=0 || t>=1) {
+        return 0;
+    }
+    return exp((1)/(t*(t-1)));
+    //return t*(1-t);
+}
+
+
 void partition(int rows, int cols, int time, double leastx, double leasty,
   double deltax, double deltay, int kgrid,  unsigned long (*m)[cols]) {
 
 
 
     int i, j, t, v;
-
-
     double x,y, xn, yn;
-    double evecs[rows][cols][6];
-    memset(evecs, 0, sizeof(double)*rows*cols*6);
+    double wsum=0;
+    for(t=0; t<time; t++) {
+        wsum += weight((double)t/(double)time);
+    }
+    double ***evecs = (double***) malloc(sizeof(double**)*rows);
+    for(int i=0; i < rows; i++) {
+        evecs[i] = (double **) malloc(sizeof(double*)*cols);
+        for(int j=0; j < cols; j++) {
+            evecs[i][j] = calloc(sizeof(double),6);
+        }
+    }
     for(i=0; i < rows; i++) {
         for(j=0; j < cols; j++) {
             if(m[i][j]==1) {
@@ -33,7 +50,7 @@ void partition(int rows, int cols, int time, double leastx, double leasty,
                 for( t=0; t <time; t++) {
                     for( v=0; v<6;v++) {
 
-                        evecs[i][j][v]+= (*fvec[v])(x,y);
+                        evecs[i][j][v]+= (*fvec[v])(x,y);//weight((double)t/(double)time);
                     }
                     xn = smod(x+y,6.283185307);
                     yn = smod(sin(x+y)+y,6.283185307);

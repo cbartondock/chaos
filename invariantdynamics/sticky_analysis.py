@@ -17,35 +17,41 @@ infile.close()
 
 pointsfile = open("outputs/stickypoints.txt")
 stickymatrix = np.zeros((params[0],params[0]))
-
-
-pointsstring = pointsfile.read()[:-2]
-points = pointsstring.split("(")[1:]
-points = [point[:-3].split(", ") for point in points]
-points = [[float(coord) for coord in point] for point in points]
+k=1
+for pointsstring in pointsfile.read().split(';'):
+    k+=1
+    pointsstring = pointsstring[:-2]
+    points = pointsstring.split("(")[1:]
+    points=[point[:-3].split(", ") for point in points]
+    points = [[float(coord) for coord in point] for point in points]
+    print(len(points))
+    for w in range(int(.4*len(points)),int(.62*len(points))):
+        point = points[w]
+        y = point[0]
+        x = point[1]
+        i = floor((x-params[1])/params[3])
+        j = floor((y-params[2])/params[4])
+        stickymatrix[i][j]=k
+        stickymatrix[i-1][j]=k
+        stickymatrix[i+1][j]=k
+        stickymatrix[i][j-1]=k
+        stickymatrix[i][j+1]=k
 pointsfile.close()
-print(len(points))
-for w in range(int(.38*len(points)),int(.62*len(points))):
-    point = points[w]
-    y = point[0]
-    x = point[1]
-    i = floor((x-params[1])/params[3])
-    j = floor((y-params[2])/params[4])
-    stickymatrix[i][j]=1
-
 stickymatrix = np.ma.masked_where(stickymatrix < 1,stickymatrix)
 plt.imshow(quasimatrix,interpolation='nearest',cmap=cm.Blues,extent=[params[1],params[1]+params[0]*params[3],params[2],params[2]+params[0]*params[4]])
 cbar = plt.colorbar()
-cbar.set_label("Number of Zeros in Difference")
+cbar.set_label("#zeros")
 plt.xlabel("x")
 plt.ylabel("y")
-plt.title("Sticky Points of Chaotic Trajectory")
-plt.imshow(stickymatrix,interpolation='nearest',cmap=cm.hsv,extent=[params[1],params[1]+params[0]*params[3],params[2],params[2]+params[0]*params[4]])
-red_patch = mpatches.Patch(color='red', label='Sticky Points')
+#plt.title("Sticky Points of a Chaotic Trajectory")
+plt.imshow(stickymatrix,interpolation='sinc',cmap=cm.brg,extent=[params[1],params[1]+params[0]*params[3],params[2],params[2]+params[0]*params[4]])
+red_patch = mpatches.Patch(color='#f90504', label='Sticky Region II')
+green_patch = mpatches.Patch(color='#00fd39', label='Sticky Region III')
+blue_patch = mpatches.Patch(color='#0025f6', label='Sticky region I')
 fontP = FontProperties()
 fontP.set_size('small')
-plt.legend(handles=[red_patch],loc = "upper right",bbox_to_anchor = (0.17, 1),prop=fontP)
-plt.savefig("outputs/sticky_result.ps")
+plt.legend(handles=[blue_patch,red_patch,green_patch],loc = "upper right",bbox_to_anchor = (0.17, 1),prop=fontP)
+plt.savefig("outputs/sticky_result.png")
 plt.clf()
 
 

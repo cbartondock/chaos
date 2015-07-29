@@ -1,4 +1,4 @@
-all: dylibs/birkhoff_partition.dylib  dylibs/invariant.dylib dylibs/invariant4.dylib dylibs/quasiperiodicity.dylib dylibs/switch.dylib dylibs/sticky.dylib 
+all: dylibs/birkhoff_partition.dylib  dylibs/invariant.dylib dylibs/invariant4.dylib dylibs/quasiperiodicity.dylib dylibs/switch.dylib dylibs/sticky.dylib dylibs/quasi_curve.dylib 
 exe: birkhoff_partition invariant invariant4 quasiperiodicity switch sticky
 
 % : %.c 

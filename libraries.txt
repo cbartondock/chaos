@@ -5,3 +5,4 @@
 ../invariantdynamics/dylibs/quasiperiodicity.dylib
 ../invariantdynamics/dylibs/sticky.dylib
 ../figurefactory/factory.dylib
+../invariantdynamics/dylibs/quasi_curve.dylib
