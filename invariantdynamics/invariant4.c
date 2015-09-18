@@ -61,7 +61,7 @@ void calc_invariant(
                         }
                         if(chmap==2){
                             memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                            rk4(newcorners[c],2*M_PI,.1);
+                            rk4(newcorners[c],2*M_PI,.001);
                         }
                         if(chmap==3){
                             newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
@@ -236,7 +236,7 @@ void calc_invariant(
                         }
                         if(chmap==2){
                             memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                            rk4(newcorners[c],2*M_PI,.1);
+                            rk4(newcorners[c],2*M_PI,.001);
                         }
                         if(chmap==3){
                             newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];

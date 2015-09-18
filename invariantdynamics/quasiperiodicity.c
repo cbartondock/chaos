@@ -56,8 +56,8 @@ void convergence(int rows, int cols, int time, long double leastx, long double l
                     for(v=0; v<fnum;v++) {
                         first[v] += (*fvec[v])(x,y)*wvar;
                     }
-                    xn = smod(x+y,6.283185307);
-                    yn = smod(1.4*sin(x+y)+y,6.283185307);
+                    xn = smod(x+y,2*M_PI);
+                    yn = smod(1.4*sin(x+y)+y,2*M_PI);
                     x = xn;
                     y = yn;
                 }
@@ -71,8 +71,8 @@ void convergence(int rows, int cols, int time, long double leastx, long double l
                     for(v=0; v<fnum;v++) {
                         second[v]+= (*fvec[v])(x,y)*wvar;
                     }
-                    xn = smod(x+y,6.283185307);
-                    yn = smod(1.4*sin(x+y)+y,6.283185307);
+                    xn = smod(x+y,2*M_PI);
+                    yn = smod(1.4*sin(x+y)+y,2*M_PI);
                     x = xn;
                     y = yn;
                 }

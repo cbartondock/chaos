@@ -22,7 +22,7 @@ double weight(double t) {
     //return t*(1-t);
 }
 
-void curve_convergence(double ax, double ay, double bx, double by, int numpoints, int time, int fnum, double (*points)[2], int preshift) {
+void curve_convergence(double ax, double ay, double bx, double by, int numpoints, int time, int fnum, int preshift, double (*points)[2]) {
 
     int t, v;
     double wsum=0;
@@ -44,11 +44,12 @@ void curve_convergence(double ax, double ay, double bx, double by, int numpoints
         x = ax + (bx-ax)*((double)p/(double)numpoints);
         y = ay + (by-ay)*((double)p/(double)numpoints);
         for(int s=0; s < preshift; s++) {
-            xn = smod(x+y,6.283185307);
-            yn = smod(1.4*sin(x+y)+y,6.283185307);
-            x = xn;
-            y = yn;
-
+            for(t=0; t< time; t++) {
+                xn = smod(x+y,2*M_PI);
+                yn = smod(1.4*sin(x+y)+y,2*M_PI);
+                x = xn;
+                y = yn;
+            }
         }
 
         memset(first, 0, sizeof(double)*fnum);
@@ -58,8 +59,8 @@ void curve_convergence(double ax, double ay, double bx, double by, int numpoints
             for(v=0; v<fnum;v++) {
                 first[v] += (*fvec[v])(x,y)*wvar;
             }
-            xn = smod(x+y,6.283185307);
-            yn = smod(1.4*sin(x+y)+y,6.283185307);
+            xn = smod(x+y,2*M_PI);
+            yn = smod(1.4*sin(x+y)+y,2*M_PI);
             x = xn;
             y = yn;
         }
@@ -73,8 +74,8 @@ void curve_convergence(double ax, double ay, double bx, double by, int numpoints
             for(v=0; v<fnum;v++) {
                 second[v]+= (*fvec[v])(x,y)*wvar;
             }
-            xn = smod(x+y,6.283185307);
-            yn = smod(1.4*sin(x+y)+y,6.283185307);
+            xn = smod(x+y,2*M_PI);
+            yn = smod(1.4*sin(x+y)+y,2*M_PI);
             x = xn;
             y = yn;
         }
