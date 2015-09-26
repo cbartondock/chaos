@@ -2,91 +2,98 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <quadmath.h>
 #include <string.h>
 #include "../rk4/rk4.c"
 #include "../usefulfunctions/functions.c"
 //2D phase space functions in L1
-double f1(double x, double y) { return cos(x+y);}
-double f2(double x, double y) { return cos(x)*cos(y); }
-double f3(double x, double y) { return sin(4*M_PI*x)*sin(4*M_PI*y); }
-double f4(double x, double y) { return sin(6*M_PI*x)*sin(4*M_PI*y); }
-double f5(double x, double y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
-double f6(double x, double y) { return sin(8*M_PI*x)*sin(8*M_PI*y); }
-double (*fvec[6]) (double x, double y) = {f1,f2,f3,f4,f5,f6};
+__float128 f1(__float128 x, __float128 y) { return cos(x+y);}
+__float128 f2(__float128 x, __float128 y) { return cos(x)*cos(y); }
+__float128 f3(__float128 x, __float128 y) { return sin(4*M_PI*x)*sin(4*M_PI*y); }
+__float128 f4(__float128 x, __float128 y) { return sin(6*M_PI*x)*sin(4*M_PI*y); }
+__float128 f5(__float128 x, __float128 y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
+__float128 f6(__float128 x, __float128 y) { return sin(8*M_PI*x)*sin(8*M_PI*y); }
+__float128 (*fvec[6]) (__float128 x, __float128 y) = {f1,f2,f3,f4,f5,f6};
 
-double weight(double t) {
-    if(t<=0 || t>=1) {
-        return 0;
+__float128 weight(__float128 t) {
+    if(t<=0.Q || t>=1.Q) {
+        return 0.Q;
     }
-    return exp((1)/(t*(t-1)));
+    return expq((1.Q)/(t*(t-1.Q)));
     //return t*(1-t);
 }
 
-void curve_convergence(double ax, double ay, double bx, double by, int numpoints, int time, int fnum, int preshift, double (*points)[2]) {
+void curve_convergence(long double ax1, long double ay1, long double bx1, long double by1, int numpoints, int time, int fnum, int preshift, double (*points)[2]) {
 
     int t, v;
-    double wsum=0;
+    __float128 wsum=0;
     for(t=0; t<time; t++) {
-        wsum += weight((double)t/(double)time);
+        wsum += weight((__float128)t/(__float128)time);
     }
 
-    double x,y, xn, yn;
-    double first[fnum];
-    double second[fnum];
-    double diff[fnum];
-    double diff_mag;
-    double  numzeros;
-    double wvar;
+    __float128 ax = ax1;
+    __float128 bx = bx1;
+    __float128 ay = ay1;
+    __float128 by = by1;
+
+    __float128 x,y, xn, yn;
+    __float128 first[fnum];
+    __float128 second[fnum];
+    __float128 diff[fnum];
+    __float128 diff_mag;
+    __float128  numzeros;
+    __float128 wvar;
 
 
 
     for(int p=0; p < numpoints; p++) {
-        x = ax + (bx-ax)*((double)p/(double)numpoints);
-        y = ay + (by-ay)*((double)p/(double)numpoints);
+        x = ax + (bx-ax)*((__float128)p/(__float128)numpoints);
+        y = ay + (by-ay)*((__float128)p/(__float128)numpoints);
         for(int s=0; s < preshift; s++) {
             for(t=0; t< time; t++) {
-                xn = smod(x+y,2*M_PI);
-                yn = smod(1.4*sin(x+y)+y,2*M_PI);
+                xn = smod(x+y,2.Q*M_PIq);
+                yn = smod(1.4Q*sinq(x+y)+y,2*M_PIq);
                 x = xn;
                 y = yn;
             }
         }
 
-        memset(first, 0, sizeof(double)*fnum);
+        memset(first, 0, sizeof(__float128)*fnum);
         for( t=0; t<time; t++) {
-            wvar = weight((double)t/(double)time);
+            wvar = weight((__float128)t/(__float128)time);
 
             for(v=0; v<fnum;v++) {
                 first[v] += (*fvec[v])(x,y)*wvar;
             }
-            xn = smod(x+y,2*M_PI);
-            yn = smod(1.4*sin(x+y)+y,2*M_PI);
+            xn = smod(x+y,2.Q*M_PIq);
+            yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
             x = xn;
             y = yn;
         }
 
-        memset(second,0,sizeof(double)*fnum);
+        memset(second,0,sizeof(__float128)*fnum);
 
         for( t=0; t <time; t++) {
-            wvar = weight((double)t/(double)time);
+            wvar = weight((__float128)t/(__float128)time);
 
 
             for(v=0; v<fnum;v++) {
                 second[v]+= (*fvec[v])(x,y)*wvar;
             }
-            xn = smod(x+y,2*M_PI);
-            yn = smod(1.4*sin(x+y)+y,2*M_PI);
+            xn = smod(x+y,2.Q*M_PIq);
+            yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
             x = xn;
             y = yn;
         }
-        diff_mag=0;
+        diff_mag=0.Q;
         for(v=0; v<fnum; v++) {
             diff[v]=(second[v]-first[v])/wsum;
             diff_mag+=diff[v]*diff[v];
         }
-        numzeros = (double)((-1*log(diff_mag))/log(10));
-        points[p][0] = (double)p/(double)numpoints;
-        points[p][1] = (double)numzeros;
+        diff_mag = sqrtq(diff_mag);
+        numzeros = (__float128)(-1.Q*log10q(diff_mag));
+        points[p][0] = (__float128)p/(__float128)numpoints;
+        points[p][1] = (__float128)numzeros;
     }
 
 }
@@ -103,7 +110,7 @@ int main() {
       printf("should be 1: %f\n", cos(i/1000.)*cos(i/1000.) + sin(i/1000.)*sin(i/1000.));
       }*/
 
-    //convergence(dim,dim,1000,0.,0.,2*M_PI/(double)dim,2*M_PI/(double)dim,1,m);
+    //convergence(dim,dim,1000,0.,0.,2*M_PI/(__float128)dim,2*M_PI/(__float128)dim,1,m);
     /*for(int i=0; i < dim; i++) {
       for(int j=0; j < dim; j++) {
       printf("%u ", m[i][j]);

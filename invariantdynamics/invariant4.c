@@ -4,6 +4,7 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
+#include <quadmath.h>
 #include "../sparse_matrix_table/smtable.c"
 #define max( a, b ) ( ( a > b) ? a : b )
 #define min( a, b ) ( ( a < b) ? a : b )
@@ -18,24 +19,47 @@ void calc_invariant(
         int rows,
         int chmap,
         int top,
-        double leastx,
-        double leasty,
-        double deltax,
-        double deltay,
+        long double aleastx,
+        long double aleasty,
+        long double adeltax,
+        long double adeltay,
         unsigned char (*m)[cols])
 {
     int i,j,c;
     unsigned char keep=1;
     int k=0;
     int count;
-    double corners[4][2]; //tl tr br bl
-    double newcorners[4][2]; //lr oo
-    double edges[4][2][2];
-    double edge[2][2];
-    double diff[2];
-    double epsilon=0.0001;
-    double tiv, tjv, ceptxraw, ceptyraw;
-    double jvminraw,jvmaxraw,ivminraw,ivmaxraw;
+    __float128** corners = (__float128**)malloc(sizeof(__float128*)*4); //tl tr br bl
+    for(int r=0; r<4; r++) {
+        corners[r] = (__float128*)malloc(sizeof(__float128)*2);
+    }
+    __float128** newcorners = (__float128**)malloc(sizeof(__float128*)*4); //lr oo
+    for(int r=0; r<4; r++) {
+        newcorners[r] = (__float128*)malloc(sizeof(__float128)*2);
+    }
+
+    __float128*** edges = (__float128***) malloc(sizeof(__float128**)*4);
+    for(int r=0; r<4; r++) {
+        edges[r] = (__float128**)malloc(sizeof(__float128*)*2);
+        for(int r2=0; r2<2; r++) {
+            edges[r][r2] = (__float128*)malloc(sizeof(__float128)*2);
+        }
+    }
+    
+    __float128 leastx = aleastx;
+    __float128 leasty = aleasty;
+    __float128 deltax = adeltax;
+    __float128 deltay = adeltay;
+
+    __float128** edge = (__float128**) malloc(sizeof(__float128*)*2);
+    for(int r=0; r<4; r++) {
+        edge[r] = (__float128*)malloc(sizeof(__float128)*2);
+    }
+
+    __float128* diff = (__float128*) malloc(sizeof(__float128)*2);
+    __float128 epsilon=.001Q;
+    __float128 tiv, tjv, ceptxraw, ceptyraw;
+    __float128 jvminraw,jvmaxraw,ivminraw,ivmaxraw;
     int jvmin,jvmax,ivmin,ivmax,ivmax2,jvmax2;
     int ceptx,cepty,ceptx2,cepty2;
     while(keep && k<maxiterf) {
@@ -56,15 +80,15 @@ void calc_invariant(
                 for(c=0; c<4; c++) {
                     for(int n=0; n < numper; n++) {
                         if(chmap==1){
-                            newcorners[c][1] = smod(sin(corners[c][0]+corners[c][1])+corners[c][1],2*M_PI);
-                            newcorners[c][0] = smod(corners[c][0]+corners[c][1],2*M_PI);
+                            newcorners[c][1] = smod(sinq(corners[c][0]+corners[c][1])+corners[c][1],2.Q*M_PIq);
+                            newcorners[c][0] = smod(corners[c][0]+corners[c][1],2.Q*M_PIq);
                         }
                         if(chmap==2){
                             memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                            rk4(newcorners[c],2*M_PI,.001);
+                            rk4(newcorners[c],2.Q*M_PIq,.001Q);
                         }
                         if(chmap==3){
-                            newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                            newcorners[c][0] = 1.4Q - corners[c][0]*corners[c][0] + .3*corners[c][1];
                             newcorners[c][1]=corners[c][0];
                         }
                         if(chmap==4){
@@ -231,15 +255,15 @@ void calc_invariant(
                 for(c=0; c<4; c++) {
                     for(int n=0; n < numper; n++) {
                         if(chmap==1){
-                            newcorners[c][1] = smod(sin(corners[c][0]+corners[c][1])+corners[c][1],2*M_PI);
-                            newcorners[c][0] = smod(corners[c][0]+corners[c][1],2*M_PI);
+                            newcorners[c][1] = smod(sinq(corners[c][0]+corners[c][1])+corners[c][1],2.Q*M_PIq);
+                            newcorners[c][0] = smod(corners[c][0]+corners[c][1],2.Q*M_PIq);
                         }
                         if(chmap==2){
                             memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                            rk4(newcorners[c],2*M_PI,.001);
+                            rk4(newcorners[c],2.Q*M_PIq,.001Q);
                         }
                         if(chmap==3){
-                            newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                            newcorners[c][0] = 1.4Q - corners[c][0]*corners[c][0] + .3*corners[c][1];
                             newcorners[c][1]=corners[c][0];
                         }
                         if(chmap==4){

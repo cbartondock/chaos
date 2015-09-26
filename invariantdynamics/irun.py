@@ -19,7 +19,7 @@ SAM = CDLL(libraries[2].strip())
 
 
 #Choose a Map: (1=Standard,2=Pendulum Poincare Section,3=Henon,4=Saddle)
-chmap = 2
+chmap = 4
 
 #Topology: (1=Plane,2=Cylinder)
 top = 2 if chmap == 2 else 1
@@ -29,7 +29,7 @@ maxiter = 30
 numper = 1
 
 #Choose Grid size:
-grid = 1000
+grid = 50
 
 #Region Dimensions (make sure these are floats):
 if chmap == 1:
@@ -58,7 +58,6 @@ print("Running on {0} with box [({1},{2}),({3},{4})] with grid {5}, number per i
 
 params = np.savetxt("outputs/parameters.txt", np.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
 
-
 m = np.ones((grid,grid),dtype="uint8")
 
 print "started invariant4.c"
@@ -69,13 +68,15 @@ INV.calc_invariant(c_int32(maxiter),
        c_int32(grid),
        c_int32(chmap),
        c_int32(top),
-	   c_double(xmin),
-	   c_double(ymin),
-	   c_double(deltax),
-       c_double(deltay),
+	   c_longdouble(xmin),
+	   c_longdouble(ymin),
+	   c_longdouble(deltax),
+       c_longdouble(deltay),
 	   m.ctypes.data_as(c_void_p))
 print "finished invariant4.c"
 
+
+"""
 #Plotting
 w = np.vectorize(lambda x: x)(m)
 plt.imshow(w,vmin=0, vmax=1,interpolation='none' if grid > 200 else 'nearest',cmap=cm.Blues,extent=[xmin,xmax,ymin,ymax])
@@ -86,6 +87,7 @@ if top == 1:
 elif top==2:
     plt.xlabel("theta")
     plt.ylabel("omega")
+
 plt.savefig("outputs/invariance_result.ps")
 plt.clf()
 
@@ -97,8 +99,6 @@ print("invariant saved")
 class adj_element(Structure):
     pass
 adj_element._fields_ = [("imageindex",c_int), ("domindex",c_int), ("imagenumber",c_int), ("next",POINTER(adj_element)), ("prev",POINTER(adj_element))]
-
-
 class sparse_adjacency_matrix(Structure):
     _fields_=[("domnumber",c_int),("grid",c_int),("leastx",c_double),("leasty",c_double),("deltax",c_double),("deltay",c_double), ("adjacency_lists",POINTER(POINTER(adj_element)))]
 
@@ -110,7 +110,7 @@ free_matrix = SAM.free_matrix
 
 if options.graph:
     sp = sam_pointer()
-    sp = initialize_matrix(c_int(grid),c_int(numper),c_int(chmap),c_int(top),c_double(xmin),c_double(ymin),c_double(deltax),c_double(deltay),m.ctypes.data_as(c_void_p))
+    sp = initialize_matrix(c_int(grid),c_int(numper),c_int(chmap),c_int(top),c_longdouble(xmin),c_longdouble(ymin),c_longdouble(deltax),c_longdouble(deltay),m.ctypes.data_as(c_void_p))
     nodes = {}
     current = adj_pointer()
     for i in range(0, sp.contents.domnumber):
@@ -125,3 +125,5 @@ if options.graph:
     outfile.close()
     free_matrix(sp)
     print "graph saved"
+
+"""

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <quadmath.h>
 #include <string.h>
 #include "../rk4/rk4.c"
 #include "../usefulfunctions/functions.c"
@@ -21,24 +22,37 @@ long double weight(long double t) {
     //return t*(1-t);
 }
 
-void convergence(int rows, int cols, int time, long double leastx, long double leasty,
-        long double deltax, long double deltay, int fnum, unsigned char (*m)[cols]) {
+void convergence(int rows, int cols, int time, long double aleastx, long double aleasty,
+        long double adeltax, long double adeltay, int fnum, unsigned char (*m)[cols]) {
 
-    int i, j, t, v;
 
-    long double wsum=0;
+    FILE *f;
+
+    const char name[] = "outputs/text_quasi_conv_t%u_g%u_xs%.2Lf_ys%.2Lf_xb%.2Lf_yb%.2Lf.txt";
+    char fname[100];
+    sprintf(fname, name, time,rows, aleastx, aleasty, aleastx+rows*adeltax,aleasty+cols*adeltay);
+    f= fopen(fname,"w");
+    unsigned int i, j, t, v;
+
+    __float128  wsum=0;
     for(t=0; t<time; t++) {
-        wsum += weight((long double)t/(long double)time);
+        wsum += weight((__float128)t/(__float128)time);
     }
 
-    long double x,y, xn, yn;
-    long double first[fnum];
-    long double second[fnum];
-    long double diff[fnum];
-    long double diff_mag;
+    __float128  x,y, xn, yn;
+    __float128  first[fnum];
+    __float128  second[fnum];
+    __float128  diff[fnum];
+    __float128  diff_mag;
     unsigned char numzeros;
-    long double wvar;
-    
+    __float128  wvar;
+
+
+    __float128 leastx = aleastx;
+    __float128 leasty = aleasty;
+    __float128 deltax = adeltax;
+    __float128 deltay = adeltay;
+
 
 
     for(i=0; i < rows; i++) {
@@ -47,32 +61,31 @@ void convergence(int rows, int cols, int time, long double leastx, long double l
             if(m[i][j]==1) {
                 x = leastx + j*deltax + 0.5*deltax;
                 y = leasty + i*deltay + 0.5*deltay;
-
-                //printf("x: %f, y: %f\n",x,y);
-                memset(first, 0, sizeof(long double)*fnum);
+                fprintf(f,"i: %u, j: %u, x: %Lf, y: %Lf, ",i,j,(long double)x,(long double)y);
+                memset(first, 0, sizeof(__float128)*fnum);
                 for( t=0; t<time; t++) {
-                    wvar = weight((long double)t/(long double)time);
+                    wvar = weight((__float128)t/(__float128)time);
 
                     for(v=0; v<fnum;v++) {
                         first[v] += (*fvec[v])(x,y)*wvar;
                     }
-                    xn = smod(x+y,2*M_PI);
-                    yn = smod(1.4*sin(x+y)+y,2*M_PI);
+                    xn = smod(x+y,2.Q*M_PIq);
+                    yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
                     x = xn;
                     y = yn;
                 }
-                
-                memset(second,0,sizeof(long double)*fnum);
+
+                memset(second,0,sizeof(__float128)*fnum);
 
                 for( t=0; t <time; t++) {
-                    wvar = weight((long double)t/(long double)time);
+                    wvar = weight((__float128)t/(__float128)time);
 
 
                     for(v=0; v<fnum;v++) {
                         second[v]+= (*fvec[v])(x,y)*wvar;
                     }
-                    xn = smod(x+y,2*M_PI);
-                    yn = smod(1.4*sin(x+y)+y,2*M_PI);
+                    xn = smod(x+y,2.Q*M_PIq);
+                    yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
                     x = xn;
                     y = yn;
                 }
@@ -81,11 +94,14 @@ void convergence(int rows, int cols, int time, long double leastx, long double l
                     diff[v]=(second[v]-first[v])/wsum;
                     diff_mag+=diff[v]*diff[v];
                 }
-                numzeros = (int)((-1*log(diff_mag))/log(10));
+                diff_mag = sqrtq(diff_mag);
+                numzeros = (int)(-1.Q*log10q(diff_mag));
+                fprintf(f, "numzeros: %.2Lf\n", (long double)(-1.Q*log10q(diff_mag)));
                 m[i][j]=(unsigned char)numzeros;
             }
         }
     }
+    fclose(f);
 
 }
 
@@ -102,10 +118,4 @@ int main() {
     }
 
     convergence(dim,dim,1000,0.,0.,2*M_PI/(long double)dim,2*M_PI/(long double)dim,1,m);
-    /*for(int i=0; i < dim; i++) {
-      for(int j=0; j < dim; j++) {
-      printf("%u ", m[i][j]);
-      }
-      printf("\n");
-      }*/
 }

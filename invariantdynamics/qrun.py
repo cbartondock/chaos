@@ -17,7 +17,7 @@ libfile.close()
 #Parameters
 
 #Choose a Grid Size
-grid=100
+grid=2000
 
 #Number of Functions Converging
 fnum = 1
@@ -31,7 +31,7 @@ deltax=(xmax-xmin)/grid
 deltay=(ymax-ymin)/grid
 
 #Iteration Number
-totaltime = 1000000  # Map iterates
+totaltime = 20000  # Map iterates
 
 #Save Parameters
 np.savetxt("outputs/qparameters.txt", np.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
@@ -40,7 +40,7 @@ m = np.ones((grid,grid),dtype="uint8")
 
 
 print "started quasiperiodicity.c"
-QUAS.convergence(c_int32(grid),
+QUAS.convergence(c_int32(grid/2),
                  c_int32(grid),
                  c_int32(totaltime),
                  c_longdouble(xmin),
@@ -54,7 +54,7 @@ print "finished quasiperiodicity.c"
 #Plotting Convergence Spatially
 w = np.vectorize(lambda x: x)(m)
 print(m)
-plt.imshow(w,vmin=0,interpolation='nearest',cmap=cm.Blues,extent=[xmin,xmax,6.28-ymax,6.28-ymin])
+plt.imshow(w,vmin=0,interpolation='nearest',cmap=cm.jet,extent=[xmin,xmax,6.28-ymax,6.28-ymin])
 cbar = plt.colorbar()
 #plt.title("Rates of Birkhoff Convergence in the Standard Map (N={0})".format(totaltime))
 cbar.set_label("#zeros")
