@@ -23,7 +23,7 @@ libraries = open('../libraries.txt').readlines()
 ERG = CDLL(libraries[3].strip())
 
 #Parameters (running on the Standard Map)
-grid=1500
+grid=100
 
 #Region Parameters
 xmin=1.

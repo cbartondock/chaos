@@ -23,14 +23,20 @@ __float128 weight(__float128 t) {
 
 void convergence(int rows, int cols, int time, long double aleastx, long double aleasty,
         long double adeltax, long double adeltay, int fnum, char (*m)[cols]) {
-
+    printf("Running Optimized Version of Quasiperiodicity\n");
+    unsigned int i, j, t, v;
+    
     FILE *f;
-    const char name[] = "outputs/text_quasi_conv_t%u_g%u_xs%.2Lf_ys%.2Lf_xb%.2Lf_yb%.2Lf.txt";
+    const char name[] = "outputs/text_optquasi_conv_t%u_g%u_xs%.2Lf_ys%.2Lf_xb%.2Lf_yb%.2Lf.txt";
     char fname[100];
     sprintf(fname, name, time,rows, aleastx, aleasty, aleastx+rows*adeltax,aleasty+cols*adeltay);
     f= fopen(fname,"w");
-    unsigned int i, j, t, v;
-
+    fprintf(f,"ONLY BOX IS CERTAIN\n\n");
+    unsigned int** traj = (unsigned int**) malloc(sizeof(unsigned int*)*time);
+    int ntraj=0;
+    for(int o=0; o < time; o++) {
+        traj[o] = (unsigned int*) malloc(sizeof(unsigned int)*2);
+    }
     __float128  wsum=0;
     for(t=0; t<time; t++) {
         wsum += weight((__float128)t/(__float128)time);
@@ -56,9 +62,9 @@ void convergence(int rows, int cols, int time, long double aleastx, long double 
         printf("i is: %u\n", i);
         for(j=0; j < cols; j++) {
             if(m[i][j]==-1) {
+                ntraj++;
                 x = leastx + j*deltax+0.5*deltax;
                 y = leasty + i*deltay+0.5*deltay;
-                fprintf(f,"i: %u, j: %u, x: %.10Lf, y: %.10Lf, ",i,j,(long double)x,(long double)y);
                 memset(first, 0, sizeof(__float128)*fnum);
                 for( t=0; t<time; t++) {
                     wvar = weight((__float128)t/(__float128)time);
@@ -68,6 +74,8 @@ void convergence(int rows, int cols, int time, long double aleastx, long double 
                     }
                     xn = smod(x+y,2.Q*M_PIq);
                     yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
+                    traj[t][0] = floorq((x-leastx)/deltax);
+                    traj[t][1] = floorq((y-leasty)/deltay);
                     x = xn;
                     y = yn;
                 }
@@ -93,13 +101,24 @@ void convergence(int rows, int cols, int time, long double aleastx, long double 
                 }
                 diff_mag = sqrtq(diff_mag);
                 numzeros = (char)(-1.Q*log10q(diff_mag));
-                fprintf(f, "numzeros: %.12Lf\n", (long double)(-1.Q*log10q(diff_mag)));
-                m[i][j]=numzeros;
+                for(t=0;t<time;t++) {
+                    m[(int)fmin(fmax(traj[t][1],0),rows-1)][(int)fmin(fmax(traj[t][0],0),cols-1)] = numzeros;
+                }
+                //m[i][j]=(unsigned char)numzeros; (old way)
             }
         }
     }
-    fclose(f);
+    for(int o=0; o< time; o++) {
+        free(traj[o]);
+    }
+    free(traj);
+    for(int i=0; i<rows; i++) {
+        for(int j=0; j<cols; j++) {
+            fprintf(f, "m[%u][%u] is %d",i,j,m[i][j]);
+        }
+    }
 
+    printf("%u\n",m[8][8]);
 }
 
 int main() {

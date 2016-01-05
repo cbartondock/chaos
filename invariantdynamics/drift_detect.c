@@ -5,58 +5,76 @@
 #include "../rk4/rk4.c"
 #include "../usefulfunctions/functions.c"
 //2D phase space functions in L1
-double f1(double x, double y) { return sin(x)*sin(x)+sin(y)*sin(y);/*return cos(x+y);*/}
-double f2(double x, double y) { return cos(x)*cos(y); }
-double f3(double x, double y) { return sin(4*M_PI*x)*sin(4*M_PI*y); }
-double f4(double x, double y) { return sin(6*M_PI*x)*sin(4*M_PI*y); }
-double f5(double x, double y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
-double f6(double x, double y) { return sin(8*M_PI*x)*sin(8*M_PI*y); }
-double (*fvec[6]) (double x, double y) = {f1,f2,f3,f4,f5,f6};
+__float128 f1(__float128 x, __float128 y) { return x*x+y*y;}
+__float128 f2(__float128 x, __float128 y) { return cosq(x)*cosq(y); }
+__float128 f3(__float128 x, __float128 y) { return sinq(4*M_PIq*x)*sinq(4*M_PI*y); }
+__float128 f4(__float128 x, __float128 y) { return sinq(6*M_PIq*x)*sinq(4*M_PI*y); }
+__float128 f5(__float128 x, __float128 y) { return sinq(4*M_PIq*x)*sinq(8*M_PI*y); }
+__float128 f6(__float128 x, __float128 y) { return sinq(8*M_PIq*x)*sinq(8*M_PI*y); }
+__float128 (*fvec[6]) (__float128 x, __float128 y) = {f1,f2,f3,f4,f5,f6};
 
-double weight(double t) {
-    if(t<=0 || t>=1) {
-        return 0;
+__float128 weight(__float128 t) {
+    if(t<=0.Q || t>=1.Q) {
+        return 0.Q;
     }
-    return exp((1)/(t*(t-1)));
+    return expq((1.Q)/(t*(t-1.Q)));
     //return t*(1-t);
 }
 
-void drift(double x_i, double y_i, int time, int total) {
+void drift(__float128 x_i, __float128 y_i, int time, int total) {
 
     int t, v;
-    double wsum=0;
+    __float128 wsum=0;
     for(t=0; t<time; t++) {
-        wsum += weight((double)t/(double)time);
+        wsum += weight((__float128)t/(__float128)time);
     }
-
-    double x = x_i;
-    double y = y_i;
-    double xn, yn;
-    double first;
-    double av;
-    double wvar;
+    printf("x_i: %.5Lf, y_i: %.5Lf\n",(long double)x_i,(long double)y_i);
+    __float128 x = x_i;
+    __float128 y = y_i;
+    __float128 xn, yn;
+    __float128 first;
+    printf("Quad Pi is: %.32Lf\n\n\n\n\n", (long double)M_PIq);
+    __float128 av, av2;
+    __float128 wvar;
     int fnum=1;
-    for(int k=0; k < total; k++) {
-        av=0;
-        for(t=0; t< time; t++) {
-            wvar = weight((double)t/(double)time);
-            for(v=0; v < fnum; v++) {
-                av+= (*fvec[v])(x,y)*wvar;
-            }
-            xn = smod(x+y,2*M_PI);
-            yn = smod(1.4*sin(x+y)+y, 2*M_PI);
-            x=xn;
-            y=yn;
+    //  for(int k=0; k < total; k++) {
+    av=0.Q;
+    for(t=0; t< time; t++) {
+        printf("x: %.4Lf, y: %.4Lf, av: %.4Lf\n",(long double)x,(long double)y, (long double)av);
+        wvar = weight((__float128)t/(__float128)time);
+        for(v=0; v < fnum; v++) {
+            av+= (*fvec[v])(x,y)*wvar;
         }
-        av=av/wsum;
-        if(k==0) {
-            first=av;
-        }
-        printf("average minus first %.20f\n", av-first);
+        xn = smod(x+y,2.Q*M_PIq);
+        yn = smod(1.4Q*sinq(x+y)+y, 2.Q*M_PIq);
+        x=xn;
+        y=yn;
     }
+    av = av/wsum;
+    av2=0.Q;
+    for(t=0; t< time; t++) {
+        wvar = weight((__float128)t/(__float128)time);
+        for(v=0; v < fnum; v++) {
+            av2+= (*fvec[v])(x,y)*wvar;
+        }
+        xn = smod(x+y,2.Q*M_PIq);
+        yn = smod(1.4Q*sinq(x+y)+y, 2.Q*M_PIq);
+        x=xn;
+        y=yn;
+    }
+    av2 = av2/wsum;
+    printf("av: %.50Lf, av2: %.50Lf\n",(long double)av,(long double)av2);
+    printf("numzeros: %f\n", (double) -1.Q*log10q(sqrtq((av2-av)*(av2-av))));
+
+    //       av=av/wsum;
+    //       if(k==0) {
+    //           first=av;
+    //       }
+    //printf("average minus first %.20f\n", av-first);
+//}
 }
 
 int main() {
-    drift(M_PI, 0.1, 100000, 10000);
-    
+    drift(M_PIq, 0.1Q, 20000, 10000);
+
 }

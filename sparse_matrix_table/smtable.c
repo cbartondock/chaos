@@ -19,10 +19,10 @@ typedef struct adj_element_t adj_element;
 typedef struct {
     int domnumber;
     int grid;
-    double leastx;
-    double leasty;
-    double deltax;
-    double deltay;
+    long double leastx;
+    long double leasty;
+    long double deltax;
+    long double deltay;
     adj_element **adjacency_lists;
 } sparse_adjacency_matrix;
 
@@ -71,7 +71,7 @@ void add_edge(int domindex, int imageindex, sparse_adjacency_matrix* matrix) {
     }
 
 }
-sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,int top,double leastx, double leasty, double deltax, double deltay, unsigned char (*m)[grid]) {
+sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,int top, long double aleastx, long double aleasty, long double adeltax, long double adeltay, unsigned char (*m)[grid]) {
 
     int domnumber=0;
     for(int i=0; i<grid; i++) {
@@ -79,14 +79,20 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
             domnumber+=m[i][j];
         }
     }
+
+    __float128 deltax = adeltax;
+    __float128 deltay = adeltay;
+    __float128 leastx = aleastx;
+    __float128 leasty = aleasty;
+
     sparse_adjacency_matrix* adjmatrix;
     adjmatrix = (sparse_adjacency_matrix*) malloc(sizeof(sparse_adjacency_matrix));
     adjmatrix->adjacency_lists = (adj_element**) malloc(sizeof(adj_element*)*domnumber);
     adjmatrix->grid = grid;
-    adjmatrix->leastx = leastx;
-    adjmatrix->leasty = leasty;
-    adjmatrix->deltax = deltay;
-    adjmatrix->deltay = deltay;
+    adjmatrix->leastx = (long double)leastx;
+    adjmatrix->leasty = (long double)leasty;
+    adjmatrix->deltax = (long double)deltay;
+    adjmatrix->deltay = (long double)deltay;
     adjmatrix->domnumber = domnumber;
     int n = 0;
     adj_element* newelement;
@@ -105,14 +111,14 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
         }
     }
     int i,j,c, domindex, imageindex;
-    double corners[4][2];
-    double newcorners[4][2]; //tl tr br bl
-    double edges[4][2][2];
-    double edge[2][2];
-    double diff[2];
-    double epsilon=.0001;
-    double tiv,tjv, ceptxraw, ceptyraw;
-    double ivmaxraw,ivminraw,jvmaxraw,jvminraw;
+    __float128 corners[4][2];
+    __float128 newcorners[4][2]; //tl tr br bl
+    __float128 edges[4][2][2];
+    __float128 edge[2][2];
+    __float128 diff[2];
+    __float128 epsilon=.0001;
+    __float128 tiv,tjv, ceptxraw, ceptyraw;
+    __float128 ivmaxraw,ivminraw,jvmaxraw,jvminraw;
     int ivmax,ivmin,jvmax,jvmin, jvmax2,ivmax2;
     int ceptx, cepty,ceptx2,cepty2;
     for(int b=0; b<domnumber; b++) {
@@ -127,15 +133,15 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
         for(int n=0; n<numper; n++) {
             for(c=0; c<4; c++) {
                 if(chmap==1){
-                    newcorners[c][1] = smod(sin(corners[c][0]+corners[c][1])+corners[c][1],2*M_PI);
-                    newcorners[c][0] = smod(corners[c][0]+corners[c][1],2*M_PI);
+                    newcorners[c][1] = smod(sinq(corners[c][0]+corners[c][1])+corners[c][1],2*M_PIq);
+                    newcorners[c][0] = smod(corners[c][0]+corners[c][1],2*M_PIq);
                 }
                 if(chmap==2){
                     memcpy(&newcorners[c],&corners[c],sizeof(corners[c]));
-                    rk4(newcorners[c],2*M_PI,.01);
+                    rk4(newcorners[c],2*M_PIq,.001Q);
                 }
                 if(chmap==3){
-                    newcorners[c][0] = 1.4 - corners[c][0]*corners[c][0] + .3*corners[c][1];
+                    newcorners[c][0] = 1.4Q - corners[c][0]*corners[c][0] + .3Q*corners[c][1];
                     newcorners[c][1]=corners[c][0];
                 }
                 if(chmap==4){
@@ -162,18 +168,18 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
             ivmaxraw = (max(edge[0][1],edge[1][1])-leasty)/deltay;
             jvminraw = (min(edge[0][0],edge[1][0])-leastx)/deltax;
             jvmaxraw = (max(edge[0][0],edge[1][0])-leastx)/deltax;
-            ivmin = ceil(ivminraw-epsilon);
-            ivmax = floor(ivmaxraw+epsilon);
-            jvmin = ceil(jvminraw-epsilon);
-            jvmax = floor(jvmaxraw+epsilon);
+            ivmin = ceilq(ivminraw-epsilon);
+            ivmax = floorq(ivmaxraw+epsilon);
+            jvmin = ceilq(jvminraw-epsilon);
+            jvmax = floorq(jvmaxraw+epsilon);
             if(jvmaxraw!=jvminraw) {
                 for(int jv=jvmin; jv<=jvmax; jv++) {
                     tjv = (leastx+jv*deltax-edge[0][0])/(diff[0]);
 
                     ceptxraw = (edge[0][0] + diff[0]*tjv-leastx)/deltax;
                     ceptyraw = (edge[0][1] + diff[1]*tjv-leasty)/deltay;
-                    ceptx = round(ceptxraw);
-                    cepty = floor(ceptyraw+epsilon);
+                    ceptx = roundq(ceptxraw);
+                    cepty = floorq(ceptyraw+epsilon);
                     ceptx2= ceptx-1;
                     cepty2= cepty-1;
                     if(top==2){//cylindrical topology
@@ -210,8 +216,8 @@ sparse_adjacency_matrix* initialize_sparse_matrix(int grid,int numper,int chmap,
 
                     ceptxraw = (edge[0][0] + diff[0]*tiv-leastx)/deltax;
                     ceptyraw = (edge[0][1] + diff[1]*tiv-leasty)/deltay;
-                    cepty = round(ceptyraw);
-                    ceptx = floor(ceptxraw+epsilon);
+                    cepty = roundq(ceptyraw);
+                    ceptx = floorq(ceptxraw+epsilon);
                     ceptx2= ceptx-1;
                     cepty2= cepty-1;
                     if(top==2){ //cylindrical topology

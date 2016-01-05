@@ -1,16 +1,21 @@
+from optparse import OptionParser
 import numpy as np
 import matplotlib.pylab as plt
 import matplotlib.cm as cm
 import time
 
-grid =2000
-time =20000
-xmin = 0.0
-ymin = 0.0
-xmax = 2*np.pi
-ymax = 2*np.pi
+parser = OptionParser()
+parser.add_option('-f','--file',dest='filename')
+(options, args) = parser.parse_args()
+
+grid = int(options.filename.split("_")[4][1:])
+time = int(options.filename.split("_")[3][1:])
+xmin = float(options.filename.split("_")[5][2:])
+ymin = float(options.filename.split("_")[6][2:])
+xmax = float(options.filename.split("_")[7][2:])
+ymax = float(options.filename.split("_")[8].split(".txt")[0][2:])
 name = "outputs/text_quasi_conv_t{0}_g{1}_xs0.00_ys0.00_xb6.28_yb6.28.txt".format(time,grid)
-f = open(name,"r")
+f = open(options.filename,"r")
 data= []
 for line in f.readlines():
     data.append([float(item.split(": ")[1]) for item in line.split(', ')[2:]])
@@ -19,17 +24,15 @@ for i in range(0, grid):
     m.append([])
     for j in range(0, grid):
         m[i].append(data[grid*i+j][2])
-print(m)
 
-plt.imshow(m,vmin=0,interpolation='nearest',cmap=cm.jet,extent=[xmin,xmax,6.28-ymax,6.28-ymin])
+plt.imshow(m,vmin=0,interpolation='nearest',cmap=cm.jet,extent=[xmin,xmax,ymin,ymax],origin = 'lower')
 cbar = plt.colorbar()
-#plt.title("Rates of Birkhoff Convergence in the Standard Map (N={0})".format(totaltime))
 cbar.set_label("#zeros")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.savefig("outputs/pconvergence_result_t{0}_g{1}_xs{2}_ys{3}_xb{4}_yb{5}.pdf".format(time,grid,round(xmin,2),round(ymin,2),round(xmax,2),round(ymax,2)))
 plt.clf()
-
+f.close()
 
 """"
 start = time.time()

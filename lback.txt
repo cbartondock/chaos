@@ -1,0 +1,272 @@
+%% author_tex.tex
+%% V1.0
+%% 2013/04/06
+%%
+%% This file describes the coding for oupau.cls
+\documentclass[times]{oupau}
+%\documentclass[times,doublespace]{oupau}%For paper submission
+\usepackage{color}
+\newcommand{\blue}{\textcolor{blue}}
+\newcommand{\red}{\textcolor{red}}
+\newcommand{\bb}{B_\infty(\phi)}
+\newcommand{\cc}{\mbox{Diff}}
+\newcommand{\dd}{\mbox{Error}}
+\usepackage{float}
+\usepackage{graphicx,subfigure}
+%\usepackage{.....} Insert the packages here
+
+%%%%%Insert enunciation definitions and other macros if used in this file
+\newtheorem{conjecture}{Conjecture}[section]
+
+%The author can find the documentation of the above style file and any additional
+%supporting files if required from "http://www.ctan.org"
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+
+\begin{document}
+
+\runningheads{C.B.D., S.D., M.S.-F., J.W.,J.Y.}{Chaos and Quasiperiodicity}
+
+\title{                        
+    Separating Chaos from Quasiperiodicity}
+
+    \author{Chris B. Dock\affil{a}, 
+    Suddhasattwa  Das\affil{b},
+    Martin Salgado-Flores\affil{d}, 
+    Jin Wu\affil{e}\corrauth, and 
+    James A. Yorke\affil{e} 
+    }
+
+    \address{
+        \affilnum{a}cbartondock@berkeley.edu\\
+        \affilnum{b}sdas11@umd.edu\\
+        \affilnum{c}mmsalgadoflore@email.wm.edu\\
+        \affilnum{d}jinwu76@gmail.com\\
+        \affilnum{e}yorke@umd.edu
+    }
+    \corraddr{University of Maryland, College Park}
+    \begin{abstract}
+    \red{Check author list with affiliations; corresponding author is Das. }
+    In \cite{bibid4} Z. Levnajić and I. Mezić presented a very creative method  for visualizing the invariant curves of Hamiltonian dynamical systems using Birkhoff Averages. We extend this method using the Weighted Birkhoff Average that was introduced in \cite{bibid1}, which gives much improved precision to their method. It was proved in \cite{bibid2} that this weighted average converges to the same limit as for Birkhoff averages, but converges far faster than Birkhoff averages
+    for any quasiperiodic trajectory. The altered convergence properties allow us to distinguish between quasiperiodic and chaotic sets with little computation and to visualize quasiperiodic regions in higher resolution. As an application, we use this technique to explore the fractal border between quasiperiodic and chaotic sets. Finally, we examine how the ``stickiness'' caused by the breakdown of the K.A.M. Theorem affects the convergence properties of the Weighted
+        Birkhoff Average.
+        \end{abstract}
+
+        \keywords{Birkhoff Average, Quasiperiodicity, Stickiness}
+
+        \received{Insert article history}
+        %\revised{<As needed>}
+        %\accepted{<As needed>}
+
+            \maketitle
+            \date{}
+            \date{\today}
+
+            \section{The Birkhoff Average and the Weighted Birkhoff Average}
+            We consider an area-preserving discrete-time $C^\infty$(i.e., infinitely differentiable) map $T:X\rightarrow X$.
+            %, and we write
+            %\begin{equation}
+            %p_{n+1} = T(p_n), n = 0,1,2,\cdots.
+            %\in \mathbb{N}
+            %\end{equation}
+            %where trajectories are defined as,
+            %\begin{equation}
+            %Traj(x_0) = \{x_{n}|T^n(x_0)=x_n \mbox{ for some } %n\}
+            %\end{equation}
+            The {\bf Birkhoff average} of $\phi$ is defined as 
+            \begin{equation}\label{eqn:WB}
+            B_N(\phi)(p_0) :=\frac{1}{N}\sum_{n=0}^{N-1} \phi (T^n(p_0)),
+            \end{equation}
+            The Birkhoff ergodic theorem says that if $T$ is ergodic on an invariant set $X_0$, then for almost every $p_0 \in X_0$,   
+            the limit of $B_N(\phi)(p_0)$ as $N\to\infty$ exists and is independent of $p_0$. Denote that limit by $\bb$.
+            For quasiperiodic dynamics, the limit exists not just for almost all $p_0$ but it exists for all $p_0 \in X_0$.
+            Following \cite{bibid1}, we change the weighting of the terms in the equation and 
+            define
+            the Weighted Birkhoff Average
+            \begin{equation}\label{eqn:WB}
+            WB_N(\phi)(p_0) :=\sum_{n=0}^{N-1} \hat{w}_{n,N}\phi (T^n(p_0)),\mbox{ where }
+            \hat{w}_{n,N}=
+            \frac{w(n/N)}{\Sigma_{j=0}^{N-1}w(j/N)}%xx
+            \end{equation}
+            %\begin{equation}
+            %WB_N(\phi)(x_0) = \frac{\sum_{n=0}^{N-1}%%{\phi(T^n(x_0))\cdot w(\frac{n}{N})}}{\sum_{n=0}^{N-1}{w(\frac{n}{N})}
+            %\end{equation}
+            where $T: X\rightarrow X$ is a discrete-time dynamical system on a compact metric phase space, and $w: [0,1]\rightarrow \mathbb{R}$ is $C^\infty$ and $w > 0$ on $(0,1)$. Assume the weight function $w$ is chosen so that $w$ and all of its derivatives vanish at $0$ and $1$. 
+            Notice that $\Sigma_{j=0}^{N-1}\hat w_{n,N} = 1$, so the weights $w_{n,N}$ can be viewed as probabilities.
+            It is proved in \cite{bibid2} that so long as $p_0$ is an element of a quasiperiodic set, there is a constant $C_k$ for each $k>0$ such that
+            \begin{equation}
+            \dd_N(p_0):=||WB_N(\phi)(p_0) - \bb||\le \frac{C_k}{N^k} \mbox{ for all }N. 
+            \end{equation}
+            This property does not hold if $p_0$ is an element of a chaotic set. If we know the expected value, we can determine whether the trajectory of $p_0$ is quasiperiodic or chaotic using $\dd_N(p_0)$. Unfortunately we do not know the value of $\bb$, but we can hope to achieve the same goal by computing the difference between two averages, the first starting from $p_0$ and the second starting from $p_N$ on the same trajectory. Define 
+            \begin{equation}
+            \cc_{N}(p_0):=||WB_N(\phi)(p_0) - WB_{N}(\phi)(T^N(p_0))||\le\frac{C_k}{N^k} \mbox{ for all }N.
+            \end{equation}
+            Then by the triangle inequality
+            \begin{align}
+            \cc_{N}(p_0)\leq \dd_N(p_0) + \dd_N(p_N)
+            \end{align}
+            It follows that if $p_0$ is quasiperiodic, then for every $k>0$ there is a constant $C_k$ such that 
+            \begin{equation}%XXX
+            \cc_{N}(p_0)\le\frac{C_k}{N^k} \mbox{ for all }N.
+            \end{equation}
+            We can therefore compute the number of zeroes immediately following the decimal point in the decimal expression of $\cc_N(p_0)$; i.e., 
+            \begin{equation}
+            \#zeros(N,p_0) := -\log_{10}(\cc_N(p_0))
+            \end{equation}
+            We expect the $\#zeros(N,p_0)$ to increase with $N$ and be much larger when $p_0$ is in a quasiperiodic set than when $(p_0)$ is in a chaotic set. We demonstrate this separation technique by letting $X$ be $\mathbb{T}^2$ and $T$ be the standard map, given by
+            \begin{equation}
+            \begin{bmatrix}
+            x \\
+            y \end{bmatrix}\mapsto 
+            \begin{bmatrix}
+            x+y \\
+            y +\rho\cdot \sin(x+y) \end{bmatrix}\;\mod\,2\pi
+            \end{equation}
+            Letting $\phi(x,y)=\cos(x+y)$ we choose a $10^3\times 10^3$ grid of points $\{p_i\}$ and compute $\{\#zeros(10^4, p_i)\}$. We note that many other choices of $C^\infty$ $\phi$ would work equally well. In this and all future uses of the standard map {\bf we set $\boldsymbol{\rho=}\mathbf{1.4}$}. See Figure~\ref{fig:convrates}. Figure~\ref{fig:convhist} shows that increasing $N$ increases the separation between quasiperiodic and chaotic sets. With $N=10^4$, the number
+            of zeros approaches the limit of quadruple precision ($32$ digits). Figure ~\ref{fig:convrates} shows that not all quasiperiodic trajectories are equal; some exhibit much faster convergence rates than others, potentially because their averages are near minima of the function $\phi$.
+            \begin{figure}[H]
+            \centering
+            \textbf{Rates of Convergence of in the Standard Map}\par\medskip
+            \begin{tabular}{cc}
+            \includegraphics[trim=0.5cm 0cm 0.5cm 0cm,clip, width=.42\textwidth]{conv_result.pdf}
+            &
+            %get rid of figure three go for verticle line graphs
+            %get rid of stickiness
+            %see what's happening along X axis (figure 1 & 8)
+            %split up figure 2 into separate figures, add 100000 iterates
+            \includegraphics[trim=0.5cm 0cm 0.5cm 0cm,clip, width=.8\textwidth]{close_up5.pdf}
+            \end{tabular}
+            \caption{{\bf Chaos vs. Quasiperiodicity.} The color bar indicates the number of leading zeroes after the decimal point on The convergence rates of $WB_N(\phi)(x_i)$ for $N=10,000$ clearly separate quasiperiodic sets (dark) from chaotic sets (light). The right image zooms in on the upper right hand corner of the left image. 
+            \red{ We need the box to be drawn in the left figure.}
+            }
+            \label{fig:convrates}
+            \end{figure}
+            \begin{figure}[H]
+            \centering
+            \textbf{\#zeros Histograms for multiple values of $N$}
+
+            \includegraphics[trim=0.5cm 1cm 0.5cm 0.1cm,width=0.7\textwidth]{multiple_conv_histograms.pdf}
+            \caption{{\bf Bimodality of the number of leading zeroes.} We see a decrease in the middle range values of $\#zeros$ as we increase $N$, indicating the separation into quasiperiodic ($>10$ zeroes) and chaotic ($<5$). This is a result of the super convergence of $WB(\phi)$ on quasiperiodic sets. All computations in this paper are carried out in quadruple precision, allowing about 32 significant digits. }
+            \label{fig:convhist}
+            \end{figure}
+
+            \section{Application: Precision Imaging of Quasiperiodic Sets}
+            Because the convergence rate is so much faster for the weighted sum, we can identify invariant curves using many fewer iterates than was required in \cite{bibid4} and with much better resolution. Using the unweighted Birkhoff average to partition the invariant curves (as was done in \cite{bibid4}), we can image the invariant curves on all of $\mathbb{T}^2$ (Figure ~\ref{fig:invcurves}).  Zooming in on a region of $\mathbb{T}^2$ that is quasiperiodic under
+            the standard map allows us to use our much more rapidly converging method and examining a grid of $10^5\times 10^5$ boxes. This yields Figure ~\ref{fig:zoom1}. In Figure ~\ref{fig:zoom1} we can see the nested behavior of the quasiperiodic region.
+            %\begin{figure}[H]
+            %\centering
+            %\textbf{Curves without Weighting}
+            %\includegraphics[trim=0.5cm 1cm 0.5cm 0cm,width=1\textwidth]{invariant_curves.pdf}
+            %\caption{Here the grid is $10^3\times 10^3$.}
+            %\label{fig:invcurves}
+            %\end{figure}
+            \begin{figure}[H]
+            \textbf{Partitioning of a Quasiperiodic Region}
+            \centering
+            \begin{tabular}{cc}
+            \includegraphics[trim=2cm 0cm 1cm 0cm,clip,width=0.5\textwidth]{birkhoff_result.pdf}
+            \includegraphics[trim=2cm 0cm 1cm 0cm,clip,width=0.5\textwidth]{weighted_br.pdf}
+            \end{tabular}
+            \caption{ {\bf Not Weighted vs.Weighted.} Here the grid is $10^4\times 10^4$. On the left we do not use weighting, on the right we  do -- no other parameters change. Distortion decreases significantly.}
+            \label{fig:zoom1}
+            \end{figure}
+
+            \section{Application: The Border between Quasiperiodicity and Chaos}
+            We can use our high precision method of distinguishing between quasiperiodic and chaotic sets to investigate their borders. By plotting convergence rates along a parametrized line segment $l: [0,1]\rightarrow X$ that passes from a known chaotic region to a known quasiperiodic region (Figure ~\ref{fig:qc_curve}), we can examine quantitatively the nature of the border between quasiperiodicity and chaos (Figure ~\ref{fig:qc_conv}). 
+            \begin{figure}[H]
+            \centering
+            \textbf{A Line Segment from a Chaotic Set to a Quasiperiodic Set}
+            \includegraphics[trim=0.5cm 6cm 0.5cm 7cm,clip,width=0.6\textwidth]{with_line2.pdf}
+            \caption{Line segment varies from (0.5,5.5) to (2,5.5)}
+            \label{fig:qc_curve}
+            \end{figure}
+            \begin{figure}[H]
+            \centering
+            \textbf{\#zeros along a Line Segment from a Chaotic Set to a Quasiperiodic Set}
+            \begin{tabular}{cc}
+            \includegraphics[trim=0.5cm 0cm 0.5cm 0cm,clip,width=0.5\textwidth]{quasi_curve_result.pdf}
+            \includegraphics[trim=0.5cm 0cm 0.5cm 0cm,clip,width=0.5\textwidth]{quasi_curve_result2.pdf}
+            \end{tabular}
+            \caption{Left segment varies from (0.5,5.5) to (2,5.5). Right segment varies from (1,5.5) to (1.5,5.5).}
+            \label{fig:qc_conv}
+            \end{figure}
+            One can clearly see the self-similarity in Figure ~\ref{fig:qc_conv}, indicating fractal complexity in the border between quasiperiodicity and chaos.
+
+
+            \begin{figure}[H]
+            \centering
+            \textbf{Effect of Trajectory Translation on Convergence Rates}
+            \includegraphics[trim=0.5cm 0cm 0.5cm
+            0cm,width=0.7\textwidth]{quasi_curve_result_special.pdf}
+            \caption{Each color corresponds to a different trajectory shift.}
+            \label{fig:moving}
+            \end{figure}
+            \begin{figure}[H]
+            \centering
+            \textbf{Deviation in \#zeros Caused by Trajectory Translation}
+            \includegraphics[trim=0.5cm 0cm 0.5cm
+            0cm,width=0.7\textwidth]{quasi_variance_result.pdf}
+            \caption{The x axis of this plot corresponds to that in Figure ~\ref{fig:moving}. The maximum standard deviation we observe is $1.692$.}
+            \label{fig:movingvar}
+            \end{figure}
+
+            \section{A Comparison to the method of Lyapunov Exponents}
+            One can also distinguish between quasiperiodic and chaotic trajectories by numerically calculating their Lyapunov exponents. The advantage of our method over that of Lyapunov exponents is its convergence rate. Along chaotic trajectories, the two techniques fair equally poorly. Along quasiperiodic trajectories, however, the Weighted Birkhoff Average converges 10 orders of magnitude faster than the average one uses to compute the Lyapunov exponent. 
+
+            \section{Increasing our Precision}
+            One issue with using the Weighted Birkhoff Average is that involves adding very small numbers to relatively large numbers. If we take our smooth function $\phi:=1$, then in  computing $WB_N(\phi)(x_0)$ along any trajectory we are numerically integrating the weight function. This is problematic because, summing from left to right, we end up adding very small numbers to relatively large numbers. This causes roundoff error which is in some cases on the same order as the averages
+            we wish to compute. Our solution is essentially to rearrange the sum. We start with a collection of numbers all of which are zero. Each number represents a logarithmic``bucket,'' i.e. the sum of all the numbers between $2^{k}$ and $2^{k+1}$. We add numbers to the appropriate bucket.
+
+            \section{Closer Look at Chaos vs. Quasiperiodicity}
+
+            \begin{figure}[H]
+            \centering
+            \textbf{Closer Look at Chaos vs. Quasiperiodicity}\\
+            %\subfigure[]{\label{fig:a}\includegraphics[trim=0.5cm 0.5cm 0.5cm 0cm,clip,width=.4\linewidth]{mixed_region.png}}
+            %\hspace{1.3cm}
+            \subfigure[]
+            {\label{fig:b}\includegraphics[trim=0.5cm 0cm 0.5cm 0cm,clip,width=.5\linewidth]{full_5_300.png}}\\
+            \subfigure[]{\label{fig:c}\includegraphics[trim=0.5cm -1cm 0.5cm 0cm,clip,width=.4\linewidth]{yellow_hist.png}}
+            \hspace{1cm}
+            \subfigure[]{\label{fig:d}\includegraphics[trim=0.5cm 0cm 0.5cm 0cm,clip,width=.45\linewidth]{yellow.png}}
+            \caption{We plot in \textbf{(a)} a mesochronic plot of functions $\sin^2(y)$, $\cos(y)$, and $\cos(x+y)$ in the zoomed in region. The black dots in \textbf{(a)} are projections onto each coordinate plane. \textbf{(b)} is a histogram of the number of points in the region with their respective \#zeros. Red represents trajectories with convergence rates with \#zeros $\leq 5$, yellow represents convergence rates with \#zeros $>5$ and $<10$, and blue represents convergence
+            rates with \#zeros $\geq 10$. \textbf{(c)} is a plot of the quasiperiodic and chaotic regions, using the color scheme from the histogram.}
+            \label{fig:qc_conv}
+            \end{figure}
+
+            \begin{figure}[H]
+            \centering
+            \textbf{Comparison with Unweighted Method}\\
+            \subfigure[]
+            {\label{fig:a}\includegraphics[width=0.5\linewidth]{cm_weightless_partition2.png}}%
+            \subfigure[]{\label{fig:b}\includegraphics[width=0.5\linewidth]{cm_weightless_divide2.png}}%
+            \hspace{2cm}
+            \subfigure[]{\label{fig:c}\includegraphics[width=0.5\linewidth]{cm_weighted_partition2.png}}%
+            \subfigure[]{\label{fig:d}\includegraphics[width=0.5\linewidth]{cm_weighted_divide2.png}}%
+            \caption{The top two plots show the value of the unweighted average 
+            \red{of $\phi(x,y) = \sin^4(y)$ using $10,000$ iterates for each point,} 
+            and produce some randomness over this scale. The bottom two show the value of the weighted sum.}
+            \label{fig:qc_conv}
+            \end{figure}
+
+            \section{Conclusion}
+
+
+            \section*{Acknowledgment}
+
+            We would like to acknowledge (insert people: Vincent Lucarelli).
+
+            \begin{thebibliography}{9}
+            \bibitem{bibid1}
+            S. Das, Y. Saiki, E. Sander, and J.A. Yorke: \textit{Quantitative Quasiperiodicity}, (2015) arxiv.org/abs/1508.00062
+            \bibitem{bibid2}
+            S. Das and J.A. Yorke: \textit{Super convergence of ergodic averages for quasiperiodic orbits}, (2015) arxiv.org/abs/1506.06810
+            \bibitem{bibid3}
+            Y. Zou, M. Thiel, M. Romano, and J. Kurths: \textit{Characterization of stickiness by means of recurrence}, Chaos, 17, 043101 (2007)
+            \bibitem{bibid4}
+            Z. Levnajić and I. Mezić: \textit{Ergodic Theory and Visualization I: Mesochronic Plots for Visualization of Ergodic Partition and Invariant Sets}, Chaos, 20, 033114 (2010). 
+            \bibitem{bibid5}
+            Z. Levnajić and I. Mezić: \textit{Ergodic Theory and Visualization. II. Fourier Mesochronic Plots Visualize (Quasi)periodic Sets}, Chaos, 25, 053105 (2015).
+            \end{thebibliography}
+
+            \end{document}

@@ -7,12 +7,12 @@
 #include "../rk4/rk4.c"
 #include "../usefulfunctions/functions.c"
 //2D phase space functions in L1
-__float128 f1(__float128 x, __float128 y) { return cos(x+y);}
-__float128 f2(__float128 x, __float128 y) { return cos(x)*cos(y); }
-__float128 f3(__float128 x, __float128 y) { return sin(4*M_PI*x)*sin(4*M_PI*y); }
-__float128 f4(__float128 x, __float128 y) { return sin(6*M_PI*x)*sin(4*M_PI*y); }
-__float128 f5(__float128 x, __float128 y) { return sin(4*M_PI*x)*sin(8*M_PI*y); }
-__float128 f6(__float128 x, __float128 y) { return sin(8*M_PI*x)*sin(8*M_PI*y); }
+__float128 f1(__float128 x, __float128 y) { return cosq(x+y);}
+__float128 f2(__float128 x, __float128 y) { return cosq(x)*cosq(y); }
+__float128 f3(__float128 x, __float128 y) { return sinq(4*M_PI*x)*sinq(4*M_PI*y); }
+__float128 f4(__float128 x, __float128 y) { return sinq(6*M_PI*x)*sinq(4*M_PI*y); }
+__float128 f5(__float128 x, __float128 y) { return sinq(4*M_PI*x)*sinq(8*M_PI*y); }
+__float128 f6(__float128 x, __float128 y) { return sinq(8*M_PI*x)*sinq(8*M_PI*y); }
 __float128 (*fvec[6]) (__float128 x, __float128 y) = {f1,f2,f3,f4,f5,f6};
 
 __float128 weight(__float128 t) {
@@ -20,10 +20,16 @@ __float128 weight(__float128 t) {
         return 0.Q;
     }
     return expq((1.Q)/(t*(t-1.Q)));
-    //return t*(1-t);
 }
 
 void curve_convergence(long double ax1, long double ay1, long double bx1, long double by1, int numpoints, int time, int fnum, int preshift, double (*points)[2]) {
+
+    FILE *f;
+
+    const char name[] = "outputs/text_quasi_curve_t%u_np%u_ax%.2Lf_ay%.2Lf_bx%.2Lf_by%.2Lf.txt";
+    char fname[100];
+    sprintf(fname, name, time,numpoints,ax1,ay1,bx1,by1);
+    f= fopen(fname,"w");
 
     int t, v;
     __float128 wsum=0;
@@ -43,16 +49,15 @@ void curve_convergence(long double ax1, long double ay1, long double bx1, long d
     __float128 diff_mag;
     __float128  numzeros;
     __float128 wvar;
-
-
-
+    
     for(int p=0; p < numpoints; p++) {
         x = ax + (bx-ax)*((__float128)p/(__float128)numpoints);
         y = ay + (by-ay)*((__float128)p/(__float128)numpoints);
+        fprintf(f,"x: %.10Lf, y: %.10Lf, ", (long double)x, (long double)y);
         for(int s=0; s < preshift; s++) {
             for(t=0; t< time; t++) {
                 xn = smod(x+y,2.Q*M_PIq);
-                yn = smod(1.4Q*sinq(x+y)+y,2*M_PIq);
+                yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
                 x = xn;
                 y = yn;
             }
@@ -92,8 +97,10 @@ void curve_convergence(long double ax1, long double ay1, long double bx1, long d
         }
         diff_mag = sqrtq(diff_mag);
         numzeros = (__float128)(-1.Q*log10q(diff_mag));
-        points[p][0] = (__float128)p/(__float128)numpoints;
-        points[p][1] = (__float128)numzeros;
+        fprintf(f,"numzeros: %.12Lf\n",(long double)numzeros);
+        points[p][0] = (double)p/(__float128)numpoints;
+        points[p][1] = (double)numzeros;
+        printf("numzeros: %.20Lf\n",(long double)numzeros);
     }
 
 }
@@ -107,7 +114,7 @@ int main() {
       }
       }
       for(int i=0; i <1000; i++){
-      printf("should be 1: %f\n", cos(i/1000.)*cos(i/1000.) + sin(i/1000.)*sin(i/1000.));
+      printf("should be 1: %f\n", cosq(i/1000.)*cosq(i/1000.) + sinq(i/1000.)*sinq(i/1000.));
       }*/
 
     //convergence(dim,dim,1000,0.,0.,2*M_PI/(__float128)dim,2*M_PI/(__float128)dim,1,m);

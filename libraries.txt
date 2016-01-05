@@ -6,3 +6,10 @@
 ../invariantdynamics/dylibs/sticky.dylib
 ../figurefactory/factory.dylib
 ../invariantdynamics/dylibs/quasi_curve.dylib
+../invariantdynamics/dylibs/extended_smap.dylib
+../invariantdynamics/dylibs/split_quasi.dylib
+../invariantdynamics/dylibs/lyapunov.dylib
+../invariantdynamics/dylibs/lyapunovconv.dylib
+../invariantdynamics/dylibs/wconv.dylib
+../invariantdynamics/dylibs/birk_curve.dylib
+../invariantdynamics/dylibs/optquasiperiodicity.dylib
