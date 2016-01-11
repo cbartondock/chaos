@@ -1,3 +1,7 @@
+""" This is the governor program for stickiness.c; it's inputs are a closeness requirement, the number of points in each recurrence window, and the initial conditions used to produce the recurrence plot. Its output
+is a recurrence plot in matrix form.
+"""
+
 import numpy as np
 import matplotlib.pylab as plt
 import matplotlib.cm as cm

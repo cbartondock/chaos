@@ -23,13 +23,13 @@ libraries = open('../libraries.txt').readlines()
 ERG = CDLL(libraries[3].strip())
 
 #Parameters (running on the Standard Map)
-grid=100
+grid=20
 
 #Region Parameters
-xmin=1.
-ymin=0
-xmax=np.pi
-ymax=np.pi-1.
+xmin=0
+ymin=-np.pi
+xmax=2*np.pi
+ymax=np.pi
 
 deltax=(xmax-xmin)/grid
 deltay=(ymax-ymin)/grid

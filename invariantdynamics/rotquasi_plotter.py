@@ -1,3 +1,9 @@
+"""
+This program plots the rotation number against the convergence rate of the birkhoff average.
+It takes two datafiles as inputs, a convergence file and a rotation # file. It is run as follows:
+    python rotquasi_plotter text_quasi_curve[].txt text_rot_[].txt
+"""
+
 from optparse import OptionParser
 import numpy as np
 import matplotlib.pylab as plt
@@ -8,7 +14,8 @@ from matplotlib import rc
 import time
 import simplest_rationals as sr
 
-ms = [15,20,25,30,40,50]
+ms = [15]
+rational_analysis=False
 
 plt.rc('text', usetex=True)
 for m in ms:
@@ -47,15 +54,16 @@ for m in ms:
     for line in fq.readlines():
         nzlist.append(float(line.split("numzeros:")[1].strip()))
     lambdalistq = [float(i)/float(numpointsq) for i in range(0,numpointsq)]
-    maxnz = max(nzlist)
+    maxnz = max([nz for nz in nzlist if nz <1000])
 
     fr = open(rfilename,"r")
     rholist = []
     for line in fr.readlines():
         rholist.append(float(line.split("rho:")[1].strip()))
     lambdalistr= [float(i)/float(numpointsr) for i in range(0,numpointsr)]
-    maxrho = max(rholist)
-    nzlist = [.2*nz/maxnz for nz in nzlist]
+    maxrho = max([rho for rho in rholist if rho<1000])
+    print(maxnz)
+    nzlist = [maxrho*nz/maxnz for nz in nzlist]
 
     fig = plt.figure()
     fig.suptitle(r'Analysis of Rational Rotation Numbers $\frac{{p}}{{q}}$ with $p+q<{0}$'.format(m),fontsize=14,fontweight='bold')
@@ -64,20 +72,20 @@ for m in ms:
 
     ax.plot(lambdalistq,nzlist,'-', color='b',linewidth=.8)
     ax.plot(lambdalistr,rholist,'-', color = 'r',linewidth=.8)
-
-    pairlist = zip(rholist,lambdalistr)
-    k=0
-    for r in rationals:
-        rat = float(r[0])/float(r[1])
-        mindiff = 10
-        minpair = (0,0)
-        for pair in pairlist:
-            if abs(pair[0]-rat) < mindiff:
-                mindiff = abs(pair[0]-rat)
-                minpair = pair
-        if abs(minpair[0]-rat) < .005:
-            ax.plot([minpair[1],minpair[1]],[minpair[0]-.005,minpair[0]+.01],'-', color = 'k', linewidth =.4)
-            ax.text(minpair[1]-.0035,minpair[0]+.013+.011*k,r'$\frac{{{0}}}{{{1}}}$'.format(r[0],r[1]),fontsize=5)
+    if rational_analysis:
+        pairlist = zip(rholist,lambdalistr)
+        k=0
+        for r in rationals:
+            rat = float(r[0])/float(r[1])
+            mindiff = 10
+            minpair = (0,0)
+            for pair in pairlist:
+                if abs(pair[0]-rat) < mindiff:
+                    mindiff = abs(pair[0]-rat)
+                    minpair = pair
+            if abs(minpair[0]-rat) < .005:
+                ax.plot([minpair[1],minpair[1]],[minpair[0]-.005,minpair[0]+.01],'-', color = 'k', linewidth =.4)
+                ax.text(minpair[1]-.0035,minpair[0]+.013+.011*k,r'$\frac{{{0}}}{{{1}}}$'.format(r[0],r[1]),fontsize=5)
         k=1-k
 
     ax.set_xlabel(r'$\lambda: [0,1]\mapsto (1-t)\cdot({0},{1}) + t\cdot({2},{3})$'.format(axq,ayq,bxq,byq))

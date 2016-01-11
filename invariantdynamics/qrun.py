@@ -1,5 +1,7 @@
-#Program for Distinguishing Quasiperiodic sets from Chaotic sets using WB averages
+""" Governor Program for quasiperiodicity.c; inputs are domain, number of functions, grid spacing,
+# map iterations, and the nonlinearity parameter of the standard map.
 
+"""
 import numpy as np
 import matplotlib.pylab as plt
 import matplotlib.cm as cm
@@ -24,22 +26,23 @@ libfile.close()
 #Parameters
 
 #Choose a Grid Size
-grid=50
+grid=1000
 
 #Number of Functions Converging
 fnum = 1
 
 #Region Parameters
-xmin=.7*np.pi
-ymin=-.3*np.pi
-xmax=1.3*np.pi
-ymax=.3*np.pi
+xmin=0
+ymin=-np.pi
+xmax=2*np.pi
+ymax=np.pi
 deltax=(xmax-xmin)/grid
 deltay=(ymax-ymin)/grid
 
 #Iteration Number
-totaltime = 10000  # Map iterates
+totaltime = 1000  # Map iterates
 
+nonlin = .5
 #Save Parameters
 np.savetxt("outputs/qparameters.txt", np.array([int(grid), float(xmin),float(ymin),float(deltax),float(deltay)]))
 
@@ -54,6 +57,7 @@ QUAS.convergence(c_int32(grid),
                  c_longdouble(ymin),
                  c_longdouble(deltax),
                  c_longdouble(deltay),
+                 c_longdouble(nonlin),
 		         c_int32(fnum),
                  m.ctypes.data_as(c_void_p))
 print "finished quasiperiodicity.c"

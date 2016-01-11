@@ -1,3 +1,7 @@
+/* Phase space partitioning algorithm using an n dimensional birkhoff average to separate invariant 
+ * curves.
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -80,7 +84,7 @@ void partition(int weighted, int rows, int cols, int time, long double aleastx, 
                         }
                     }
                     xn = smod(x+y,2.Q*M_PIq);
-                    yn = smod(sin(x+y)+y,2.Q*M_PIq);
+                    yn = smod(.5*sin(x+y)+y,2.Q*M_PIq);
                     x = xn;
                     y = yn;
                 }

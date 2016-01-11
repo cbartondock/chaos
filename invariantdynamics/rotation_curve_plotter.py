@@ -1,3 +1,8 @@
+""" Plots the outputs of rotation_line.c; takes a command line input of the file name of the form
+python rotation_curve_plotter.py -f [filename]
+"""
+
+
 from optparse import OptionParser
 import numpy as np
 import matplotlib.pylab as plt
@@ -7,7 +12,7 @@ import time
 parser = OptionParser()
 parser.add_option('-f','--file',dest='filename')
 (options, args) = parser.parse_args()
-name = "outputs/text_rotation_curve_t1000_np100_ax3.14_ay0.00_bx4.08_by0.00.txt"
+name = "outputs/text_rotation_curve_t1000_np1000_ax0.00_ay-3.14_bx0.00_by3.14_ph1.txt"
 
 numpoints = int(options.filename.split("_")[4][2:])
 time = int(options.filename.split("_")[3][1:])

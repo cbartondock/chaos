@@ -29,6 +29,7 @@ void curve_part(int weighted, double ax, double ay, double bx, double by, int nu
         wsum += weight((double)t/(double)time);
     }
 
+    double nonlin_param = .5; //Critical Value is ~.97
     double x,y, xn, yn;
     double first;
     double wvar;
@@ -51,7 +52,7 @@ void curve_part(int weighted, double ax, double ay, double bx, double by, int nu
                 }   
             }
             xn = smod(x+y,2*M_PI);
-            yn = smod(1.4*sin(x+y)+y,2*M_PI);
+            yn = smod(nonlin_param*sin(x+y)+y,2*M_PI);
             x = xn;
             y = yn;
         }

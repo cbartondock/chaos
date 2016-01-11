@@ -1,4 +1,9 @@
-
+/* This program produces the convergence rates of the birkhoff average
+ * along a line segment specified by two points. These convergence rates 
+ * strongly differentiate the presence of chaos and quasiperiodicity. The 
+ * results are processed and plotted by qcrun.py, or stored in files of the
+ * form text_quasi_curve_[].txt and plotted by quasi_curve_plotter.py
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -22,7 +27,7 @@ __float128 weight(__float128 t) {
     return expq((1.Q)/(t*(t-1.Q)));
 }
 
-void curve_convergence(long double ax1, long double ay1, long double bx1, long double by1, int numpoints, int time, int fnum, int preshift, double (*points)[2]) {
+void curve_convergence(long double ax1, long double ay1, long double bx1, long double by1, long double anonlin, int numpoints, int time, int fnum, int preshift, double (*points)[2]) {
 
     FILE *f;
 
@@ -47,8 +52,10 @@ void curve_convergence(long double ax1, long double ay1, long double bx1, long d
     __float128 second[fnum];
     __float128 diff[fnum];
     __float128 diff_mag;
-    __float128  numzeros;
+    __float128 numzeros;
     __float128 wvar;
+
+    __float128 nonlin=anonlin;
     
     for(int p=0; p < numpoints; p++) {
         x = ax + (bx-ax)*((__float128)p/(__float128)numpoints);
@@ -57,7 +64,7 @@ void curve_convergence(long double ax1, long double ay1, long double bx1, long d
         for(int s=0; s < preshift; s++) {
             for(t=0; t< time; t++) {
                 xn = smod(x+y,2.Q*M_PIq);
-                yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
+                yn = smod(nonlin*sinq(x+y)+y,2.Q*M_PIq);
                 x = xn;
                 y = yn;
             }
@@ -71,7 +78,7 @@ void curve_convergence(long double ax1, long double ay1, long double bx1, long d
                 first[v] += (*fvec[v])(x,y)*wvar;
             }
             xn = smod(x+y,2.Q*M_PIq);
-            yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
+            yn = smod(nonlin*sinq(x+y)+y,2.Q*M_PIq);
             x = xn;
             y = yn;
         }
@@ -86,7 +93,7 @@ void curve_convergence(long double ax1, long double ay1, long double bx1, long d
                 second[v]+= (*fvec[v])(x,y)*wvar;
             }
             xn = smod(x+y,2.Q*M_PIq);
-            yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
+            yn = smod(nonlin*sinq(x+y)+y,2.Q*M_PIq);
             x = xn;
             y = yn;
         }

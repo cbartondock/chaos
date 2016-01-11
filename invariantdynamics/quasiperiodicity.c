@@ -1,3 +1,12 @@
+/* This program calculates the convergence rate of the Weighted Birkhoff Average with respect to a given
+ * function along trajectories beginning at a grid of points on the torus. 
+ * Specifically, it calculates the average for the first "time" points and the next "time" points,
+ * and stores the negative log of their difference in a file. It does this for each point in the grid.
+ * It also takes in the nonlinearity parameter for the standard map.
+ *
+ * cbartondock@gmail.com
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -22,7 +31,7 @@ __float128 weight(__float128 t) {
 }
 
 void convergence(int rows, int cols, int time, long double aleastx, long double aleasty,
-        long double adeltax, long double adeltay, int fnum, char (*m)[cols]) {
+        long double adeltax, long double adeltay, long double anonlin, int fnum, char (*m)[cols]) {
 
     FILE *f;
     const char name[] = "outputs/text_quasi_conv_t%u_g%u_xs%.2Lf_ys%.2Lf_xb%.2Lf_yb%.2Lf.txt";
@@ -49,7 +58,8 @@ void convergence(int rows, int cols, int time, long double aleastx, long double 
     __float128 leasty = aleasty;
     __float128 deltax = adeltax;
     __float128 deltay = adeltay;
-
+    
+    __float128 nonlin = anonlin;
 
 
     for(i=0; i < rows; i++) {
@@ -67,7 +77,7 @@ void convergence(int rows, int cols, int time, long double aleastx, long double 
                         first[v] += (*fvec[v])(x,y)*wvar;
                     }
                     xn = smod(x+y,2.Q*M_PIq);
-                    yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
+                    yn = smod(nonlin*sinq(x+y)+y,2.Q*M_PIq);
                     x = xn;
                     y = yn;
                 }
@@ -82,7 +92,7 @@ void convergence(int rows, int cols, int time, long double aleastx, long double 
                         second[v]+= (*fvec[v])(x,y)*wvar;
                     }
                     xn = smod(x+y,2.Q*M_PIq);
-                    yn = smod(1.4Q*sinq(x+y)+y,2.Q*M_PIq);
+                    yn = smod(nonlin*sinq(x+y)+y,2.Q*M_PIq);
                     x = xn;
                     y = yn;
                 }
@@ -114,5 +124,5 @@ int main() {
         printf("should be 1: %f\n", cos(i/1000.)*cos(i/1000.) + sin(i/1000.)*sin(i/1000.));
     }
 
-    convergence(dim,dim,1000,0.,0.,2*M_PI/(__float128)dim,2*M_PI/(__float128)dim,1,m);
+    convergence(dim,dim,1000,0.,0.,2*M_PI/(__float128)dim,2*M_PI/(__float128)dim,1.4,1,m);
 }

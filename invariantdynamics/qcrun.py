@@ -1,4 +1,6 @@
-
+""" This is the governor program for quasi_curve.c; its inputs are two points, the # of iterations, the # of functions,
+a nonlinearity parameter and a preshift. It outputs (into m) a list of 2-tuples of the parameter and the associated convergence rate.
+"""
 
 import numpy as np
 import matplotlib.pylab as plt
@@ -21,16 +23,17 @@ libfile.close()
 fnum = 1
 
 #Curve Parameters
-ax = 0#np.pi
-bx = 2*np.pi#.84*1.55*np.pi
-ay = 0#0
-by = 0#.84
+ax = 0
+bx = 0
+ay = -np.pi
+by =np.pi
 
 #Iteration Number
-totaltime = 1000000   # Map iterates
+totaltime = 1000   # Map iterates
 numpoints = 1000 #sampling of curve
 totalshifts = 1
-alldata = [[0 for i in range(totalshifts)] for j in range(numpoints)]
+nonlin = 0.5
+alldata = [[0 for i in range(totalshifts)] for j in range(numpoints)] #we were checking the effects of different preshifts
 #Save Parameters
 for preshift in range(totalshifts):
     m = np.zeros((numpoints,2),dtype="float64")
@@ -40,6 +43,7 @@ for preshift in range(totalshifts):
                  c_longdouble(ay),
                  c_longdouble(bx),
                  c_longdouble(by),
+                 c_longdouble(nonlin),
                  c_int32(numpoints),
                  c_int32(totaltime),
 		         c_int32(fnum),

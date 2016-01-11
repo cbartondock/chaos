@@ -1,3 +1,8 @@
+/* This program uses box maps to determine an outer bound for the maximal invariant set of a 
+ * dynamical system. It is much faster but also much less readable than invariant.c.
+ */
+
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

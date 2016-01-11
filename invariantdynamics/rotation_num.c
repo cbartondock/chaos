@@ -1,3 +1,8 @@
+/*
+ * This program computes the rotation number about a single point and outputs it.
+ */
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
